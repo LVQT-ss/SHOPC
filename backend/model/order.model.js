@@ -40,6 +40,6 @@ order.belongsTo(User, { foreignKey: 'userId' })
 User.hasMany(order, { foreignKey: 'userId' })
 
 
-order.hasMany(orderDetails, { foreignKey: 'orderDetailsId' })
-
+order.hasMany(orderDetails, { foreignKey: 'orderId' })
+orderDetails.belongsTo(order, { foreignKey: 'orderId' })
 export default order;

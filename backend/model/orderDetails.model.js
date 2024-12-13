@@ -23,6 +23,7 @@ const orderDetails = sequelize.define('Category', {
 
 orderDetails.belongsTo(order, { foreignKey: 'orderId' })
 
-orderDetails.hasMany(product, { foreignKey: 'productId' })
+orderDetails.belongsTo(product, { foreignKey: 'productId' })
+product.hasMany(orderDetails, { foreignKey: 'productId' })
 
 export default orderDetails;
