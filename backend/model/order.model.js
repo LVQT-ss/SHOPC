@@ -1,9 +1,9 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/db.js';
 import User from './user.model.js';
-import orderDetails from './orderDetails.model.js';
+import OrderDetails from './orderDetails.model.js';
 
-const order = sequelize.define('Category', {
+const Order = sequelize.define('Order', {
     orderId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -17,7 +17,7 @@ const order = sequelize.define('Category', {
         type: DataTypes.DATE,
     },
     orderTotal: {
-        type: DataTypes.STRING,
+        type: DataTypes.DECIMAL(10, 2), // More appropriate for monetary values
     },
     guestAddress: {
         type: DataTypes.STRING,
@@ -30,16 +30,10 @@ const order = sequelize.define('Category', {
         defaultValue: 'active',
         allowNull: false,
     }
-
 }, {
-    tableName: 'categories',
+    tableName: 'orders', // Corrected table name
     timestamps: false,
 });
 
-order.belongsTo(User, { foreignKey: 'userId' })
-User.hasMany(order, { foreignKey: 'userId' })
 
-
-order.hasMany(orderDetails, { foreignKey: 'orderId' })
-orderDetails.belongsTo(order, { foreignKey: 'orderId' })
-export default order;
+export default Order;

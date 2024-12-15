@@ -1,13 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import initDB from './src/database/init.js';
-import swaggerDocs from './src/utils/swagger.js';
-import userRoutes from './src/routes/user.route.js';
-import authRoutes from './src/routes/auth.route.js';
-import productRoutes from './src/routes/product.route.js';
+import initDB from './database/init.js';
+import swaggerDocs from './utils/swagger.js';
+import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
+import productRoutes from './routes/product.route.js';
 import dotenv from 'dotenv';
+import setupAssociations from './model/associations.js';
 
+// Call this before starting your server
+setupAssociations();
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;

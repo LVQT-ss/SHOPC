@@ -1,9 +1,9 @@
 // src/database/init.js
 import sequelize from './db.js';
-import User from '../models/user.models.js';
-import Pond from '../models/Pond.model.js';
-import KoiFish from '../models/Koifish.model.js';
-import KoiRecord from '../models/KoiRecord.model.js';
+import User from '../model/user.model.js';
+import product from '../model/product.model.js';
+import order from '../model/order.model.js';
+import orderDetails from '../model/orderDetails.model.js';
 const initDB = async () => {
     try {
         await sequelize.authenticate();

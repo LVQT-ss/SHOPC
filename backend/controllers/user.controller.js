@@ -1,5 +1,5 @@
 // src/controller/user.controller.js
-import User from '../models/user.models.js';
+import User from '../model/user.model.js';
 import 'dotenv/config'
 export const getAllUsers = async (req, res) => {
     try {

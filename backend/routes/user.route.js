@@ -1,6 +1,6 @@
 // src/routes/user.route.js
 import express from 'express';
-import { getAllUsers, getUserById, updateUser, deleteUser, getAllStaff, getAllCustomer, logout } from '../controller/user.controller.js';
+import { getAllUsers, getUserById, updateUser, deleteUser, getAllStaff, getAllCustomer, logout } from '../controllers/user.controller.js';
 const router = express.Router();
 // GET METHOD for getalluser
 /**

@@ -1,29 +1,22 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/db.js';
-import order from './order.model.js';
-import product from './product.model.js';
 
-const orderDetails = sequelize.define('Category', {
+const OrderDetails = sequelize.define('OrderDetails', {
     orderDetailsId: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
     quantity: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     price: {
-        type: DataTypes.STRING,
+        type: DataTypes.DECIMAL(10, 2),
     },
 }, {
-    tableName: 'categories',
+    tableName: 'order_details',
     timestamps: false,
 });
 
-orderDetails.belongsTo(order, { foreignKey: 'orderId' })
-
-orderDetails.belongsTo(product, { foreignKey: 'productId' })
-product.hasMany(orderDetails, { foreignKey: 'productId' })
-
-export default orderDetails;
+export default OrderDetails;

@@ -1,23 +1,12 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/db.js';
-import User from './user.models.js';
-import category from './category.model.js';
-import orderDetails from './orderDetails.model.js';
+import Category from './category.model.js';
 
-const product = sequelize.define('Product', {
+const Product = sequelize.define('Product', {
     productId: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-    },
-    categoryId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: category,
-            key: 'categoryId',
-        },
-        onDelete: 'CASCADE',
     },
     productName: {
         type: DataTypes.STRING(100),
@@ -28,28 +17,22 @@ const product = sequelize.define('Product', {
         allowNull: false,
     },
     productPrice: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.DECIMAL(10, 2), // More precise for monetary values
         allowNull: false,
     },
     isActive: {
-        type: DataTypes.ENUM('active', 'inActive', 'waiting'),  // Updated values
-        defaultValue: 'waiting',
+        type: DataTypes.ENUM('active', 'inActive'),
+        defaultValue: 'inActive',
     },
     image: {
         type: DataTypes.STRING,
         allowNull: true,
     },
 }, {
-    tableName: 'Product',
+    tableName: 'products', // More conventional naming
     timestamps: false,
 });
 
 
-// Set up relationships
-product.belongsTo(category, { foreignKey: 'categoryId' }); // Each product belongs to a category
-category.hasMany(product, { foreignKey: 'categoryId' }); // A category has many products
 
-product.belongsTo(orderDetails, { foreignKey: 'orderDetailsId' }); // Each product belongs to a user
-orderDetails.hasMany(product, { foreignKey: 'orderDetailsId' });
-
-export default product;
+export default Product;

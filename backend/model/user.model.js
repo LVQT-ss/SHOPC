@@ -1,7 +1,6 @@
-
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/db.js';
-import order from './order.model.js';
+import Order from './order.model.js';
 
 const User = sequelize.define('User', {
     userId: {
@@ -10,7 +9,7 @@ const User = sequelize.define('User', {
         primaryKey: true,
     },
     usertype: {
-        type: DataTypes.ENUM('Admin', 'Manager', 'Staff', 'Customer'),
+        type: DataTypes.ENUM('Admin', 'Customer'),
         allowNull: false,
     },
     username: {
@@ -22,6 +21,9 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
+        validate: {
+            isEmail: true, // Added email validation
+        }
     },
     image: {
         type: DataTypes.STRING(255),
@@ -41,17 +43,15 @@ const User = sequelize.define('User', {
         allowNull: true,
     },
     userStatus: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('active', 'inactive', 'suspended'), // More structured status
         allowNull: true,
+        defaultValue: 'active'
     },
 }, {
-    tableName: 'User',
+    tableName: 'users', // More conventional naming
     timestamps: false,
 });
 
-User.hasMany(order, {
-    foreignKey: 'userId',
-    as: 'orders'
-});
+
 
 export default User;

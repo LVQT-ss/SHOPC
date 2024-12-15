@@ -1,5 +1,5 @@
 import Product from "../model/product.model.js";
-import User from "../model/user.models.js";
+import User from "../model/user.model.js";
 
 // create new product
 export const createProduct = async (req, res) => {

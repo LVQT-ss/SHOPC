@@ -1,6 +1,6 @@
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.models.js';
+import User from '../model/user.model.js';
 import { sendPasswordEmail, sendPasswordResetEmail } from '../utils/mailer.js';
 import 'dotenv/config'
 
