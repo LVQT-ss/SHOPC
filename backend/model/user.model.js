@@ -42,11 +42,11 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING(50),
         allowNull: true,
     },
-    userStatus: {
-        type: DataTypes.ENUM('active', 'inactive', 'suspended'), // More structured status
-        allowNull: true,
-        defaultValue: 'active'
-    },
+    // userStatus: {
+    //     type: DataTypes.ENUM('active', 'inactive', 'suspended'), // More structured status
+    //     allowNull: true,
+    //     defaultValue: 'active'
+    // },
 }, {
     tableName: 'users', // More conventional naming
     timestamps: false,

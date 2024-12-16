@@ -65,7 +65,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.post('/createProduct', verifyToken, createProduct);
+router.post('/createProduct', createProduct);
 
 /**
  * @swagger
@@ -97,7 +97,7 @@ router.get('/getAllProducts', getAllProducts);
  *       500:
  *         description: Server error
  */
-router.get('/getAllProductsOrigin', verifyToken, getAllProductsOrigin);
+router.get('/getAllProductsOrigin', getAllProductsOrigin);
 
 /**
  * @swagger
@@ -176,7 +176,7 @@ router.get('/getProductById/:productId', getProductById);
  *       500:
  *         description: Server error
  */
-router.put('/updateProduct/:productId', verifyToken, updateProduct);
+router.put('/updateProduct/:productId', updateProduct);
 
 /**
  * @swagger
@@ -215,7 +215,7 @@ router.put('/updateProduct/:productId', verifyToken, updateProduct);
  *       500:
  *         description: Server error
  */
-router.patch('/updateProductActiveStatus/:productId', verifyToken, updateProductActiveStatus);
+router.patch('/updateProductActiveStatus/:productId', updateProductActiveStatus);
 
 /**
  * @swagger
@@ -241,6 +241,6 @@ router.patch('/updateProductActiveStatus/:productId', verifyToken, updateProduct
  *       500:
  *         description: Server error
  */
-router.delete('/deleteProduct/:productId', verifyToken, deleteProduct);
+router.delete('/deleteProduct/:productId', deleteProduct);
 
 export default router;

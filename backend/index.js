@@ -6,6 +6,7 @@ import swaggerDocs from './utils/swagger.js';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import productRoutes from './routes/product.route.js';
+import categoryRoutes from './routes/category.route.js';
 import dotenv from 'dotenv';
 import setupAssociations from './model/associations.js';
 
@@ -24,6 +25,7 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes); // Add this line
 
 // Initialize and synchronize the database
 initDB().then(() => {

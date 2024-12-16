@@ -30,7 +30,6 @@ export const register = async (req, res) => {
       password: hashedPassword,
       userAddress: userAddress || null,
       userPhoneNumber: userPhoneNumber || null,
-      userStatus: 'Active'
     });
 
     res.status(201).json({ message: 'User successfully registered!', user });
