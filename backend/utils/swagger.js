@@ -17,26 +17,26 @@ const options = {
     },
     components: {
       securitySchemes: {
-          Authorization: {
-              type: "http",
-              scheme: "bearer",
-              bearerFormat: "JWT",
-              value: "Bearer <JWT token here>"
-          }
+        Authorization: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          value: "Bearer <JWT token here>"
+        }
       }
-  },
-  
+    },
+
     servers: [
       {
         url: "http://localhost:3000",
         description: "Local server"
-      },{
+      }, {
         url: "https://nodejs-sqlserver-1.onrender.com",
         description: "Live server"
       },
     ]
   },
-  apis: ['./src/routes/*.js','index.js'],
+  apis: ['./routes/*.js', 'index.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
