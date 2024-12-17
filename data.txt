@@ -1,0 +1,316 @@
+Category : 
+INSERT INTO categories ("categoryName", "categoryType") VALUES
+('Bo mạch chủ', 'Linh kiện chính'),
+('Bộ vi xử lý', 'Linh kiện chính'),
+('RAM', 'Linh kiện chính'),
+('Ổ cứng HDD', 'Lưu trữ'),
+('Ổ cứng SSD', 'Lưu trữ'),
+('Card đồ họa', 'Linh kiện chính'),
+('Nguồn điện PSU', 'Linh kiện hỗ trợ'),
+('Hệ thống làm mát', 'Linh kiện hỗ trợ'),
+('Ổ đĩa quang', 'Phụ kiện'),
+('Card mạng', 'Linh kiện kết nối'),
+('Vỏ máy tính', 'Phụ kiện');
+Product : 
+[
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/z5898065698250_719b6a1c53c7913007f4b2e975db2ace_52eccfdd1e614cf2b3980331f13efc47_large.jpg",
+    "title": "Card màn hình VGA MSI GTX 1060 3GB GDDR5",
+    "price": "1,950,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA Gigabyte RTX 2060 6GB OC 2 Fan QSD",
+    "price": "3,750,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/tinhocngoisao.com1__2__2d0db91de88b4cc98fde372af0455fd5_large.jpg",
+    "title": "Card màn hình VGA Colorful GeForce RTX 2070 8G QSD",
+    "price": "4,050,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/tinhocngoisao.com1_5991f87edec84d1d87bb52e62c806d37_large.jpg",
+    "title": "Card màn hình VGA ASUS GTX 1060 3GB GDDR5 QSD",
+    "price": "1,950,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA Gigabyte GTX 1660 Ti 6GB 2 Fan QSD",
+    "price": "3,490,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.2060.6g.gg.d6.2f.cu_2614a5ca69414d8ab86874ee479c8858_large.jpg",
+    "title": "VGA Gigabyte RTX 2060 6G D6 2 Fan QSD",
+    "price": "3,750,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA GIGABYTE GTX 1060 3GB GDDR5 OC",
+    "price": "1,950,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/z5935435350053_e5b5633d983b5fb2a3761c6a22704b08_d8d8be7ab6ac415da886707c041557e5_large.jpg",
+    "title": "Card màn hình VGA GALAX RTX 3060Ti 8GB GDDR6 QSD",
+    "price": "5,990,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ASUS KO GeForce RTX 3060 V2 OC Edition QSD",
+    "price": "5,790,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.3070ti.8g.evga.ftw3.cu_1091893db8c245d1a12cc0f0a03412e1_large.jpg",
+    "title": "Card màn hình VGA EVGA RTX 3070 Ti FTW3 ULTRA 8GB GDDR6 QSD",
+    "price": "7,890,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/z5784601281177_d2d668fa5ef2662aaedb56c7c8308040_c371e0fd3c1045c7b2a613067cad82a6_large.jpg",
+    "title": "VGA COLORFUL RTX 2060 Super 8G-V 2 Fan",
+    "price": "4,390,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA Inno3D RTX 2060 Super 8GB 2 Fan (QSD)",
+    "price": "4,150,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.1660sp.6g.msi.vt.12t_2f199384d6ed4c1296d6c00a057cc163_large.jpg",
+    "title": "Card màn hình VGA MSI GTX 1660 Super Ventus 2 Fan (QSD)",
+    "price": "3,490,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA OCPC GTX 1660 Super 6GB GDDR6 Cũ",
+    "price": "3,150,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "VGA Gigabyte RTX3060 12GB Gaming OC 3 Fan",
+    "price": "5,990,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.1660sp.6g.as.tuf.gm.2f.cu_bd2087d443fb41749fb96028cb12c9df_large.jpg",
+    "title": "VGA Asus Tuf GTX 1660 super 6GB gaming 2 fan",
+    "price": "3,490,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.3060ti.8g.gg.gm.oc.3f.cu_ad8d563b0d1e4f7e9d3f1aa7001c92e7_large.jpg",
+    "title": "VGA Gigabyte RTX 3060Ti Gaming OC 8GB 3 Fan QSD",
+    "price": "6,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/khung-sp---hang-cu_b67a446ad6814a89ab34f4654d174871_large.jpg",
+    "title": "VGA Galax RTX2060 12GB GDDR6 2 Fan",
+    "price": "Liên hệ"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/gg_rtx2060_12g_wfoc_8c4d108a0fa2419080118a4497812e13_large.jpg",
+    "title": "VGA Gigabyte RTX 2060 12GB Windforce OC 2 Fan QSD",
+    "price": "4,690,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.3070ti.8g.gl.2f.cu_d69923af65fd46378567651ea9c4bf9f_large.jpg",
+    "title": "Card màn hình VGA GALAX RTX 3070 Ti (1-Click OC) 8GB",
+    "price": "7,690,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.1660sp.6g.msi.vt.xs.oc.cu_9f2dcd9eec734b03b6b9d7f962ee5b59_large.jpg",
+    "title": "VGA MSI GTX 1660 6GB Super Ventus XS OC 2 Fan",
+    "price": "3,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/tinhocngoisao.com1_4273937f6781463bb818dae5e0e2b2ef_large.jpg",
+    "title": "Card màn hình VGA MSI RTX 3070 Gaming X TRIO 8GB",
+    "price": "7,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/tinhocngoisao.com1_d8e86f6e9936429ba67bd592a0098d10_large.jpg",
+    "title": "VGA MSI RTX 3060 Ventus OC 12GB 2 Fan",
+    "price": "5,690,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA MSI RTX 2060 Ventus XS 6GB OC (QSD)",
+    "price": "3,750,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/tinhocngoisao.com1_dbbe03927def4b398f49011cc9342bcb_large.jpg",
+    "title": "Card màn hình VGA PALIT RTX 3060 12GB GDDR6 Dual",
+    "price": "5,290,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA COLORFUL RTX 2060 6GB",
+    "price": "3,650,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/gw_rtx2060sp_ghost-600x600_7a8cc29296e34dc09bf2e8952c08e35d_large.jpg",
+    "title": "VGA Gainward RTX 2060 Super Ghost 8GB GDDR6 2 Fan QSD",
+    "price": "3,790,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA GALAX RTX 3060 12G GDDR6 (1-Click OC)",
+    "price": "5,750,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA COLORFUL RTX 3060 Ti NB Duo 8GB 2 Fan V2 LHR-V",
+    "price": "5,990,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA Gigabyte RTX 2060 12GB DDR6 QSD",
+    "price": "4,490,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.2060sp.8g.zt.mn.gm.2f.cu_c917983fe59849f3a44c30f3ad30e975_large.jpg",
+    "title": "Card màn hình VGA ZOTAC Gaming GeForce RTX 2060 Super Mini 8GB (QSD)",
+    "price": "4,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/byte-rtx-2060-super-8g-gddr6-windforce-2-fan-gv-n206swf2-8gd-3-600x600_53c9ab85362740c29eb6dc19dcb33e21_large.jpg",
+    "title": "VGA Gigabyte RTX 2060 Super 8GB Windforce 2 Fan QSD",
+    "price": "4,550,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ASUS Dual GeForce RTX 3050 OC Edition 6GB GDDR6 QSD",
+    "price": "3,490,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA MSI GeForce RTX 4060 Ti VENTUS 3X 8G OC QSD",
+    "price": "9,900,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ZOTAC Gaming GTX 1660 Super 6GB GDDR6 QSD",
+    "price": "3,190,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Máy Bộ Zotac ( VGA 1080 + Ram 16G - I7 7700) QSD",
+    "price": "8,990,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "VGA GALAX RTX3080 10GB SG 3 Fan",
+    "price": "9,790,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/_new_-anh-sp-web_64b99ffec9a34703b5ea7e26e2c88b35_large.jpg",
+    "title": "Card màn hình VGA GIGABYTE RTX 3060 Ti Eagle OC 8G 2 Fan",
+    "price": "6,050,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/bb.de.3040.sff.cu_2b46e0d22df447f89760657af0b79888_large.jpg",
+    "title": "Máy Bộ Barebone Dell Optiplex 3040 SFF QSD",
+    "price": "1,150,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/rx550-4gb-128bit-2_2414b59c2f3f43788dbe72a958d1954c_large.jpg",
+    "title": "Card màn hình VGA ARK RX550 4GB",
+    "price": "1,490,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ELSA RX550 4GB 1 Fan",
+    "price": "1,490,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA T-WOLF TW-RX580 8GB GDDR5",
+    "price": "2,350,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/rx-580-8gb-256bit-v4-3-scaled_4b262e1983664434997541fcc7cef40b_large.jpg",
+    "title": "Card màn hình VGA ARK RX 580 8GB",
+    "price": "2,350,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA Unika Blizzard White RX580 8GB 2 Fan",
+    "price": "2,390,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ASUS Dual Radeon™ RX 6500 XT OC Edition (DUAL-RX6500XT-O4G-V2)",
+    "price": "3,550,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/_2023_-khung-sp-_1__1b8a253c228c446292f11e37d83acbaf_large.jpg",
+    "title": "Card màn hình VGA ASRock Radeon RX 6600 8GB GDDR6 Challenger D (RX 6600 CLD 8GB)",
+    "price": "5,150,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA ASUS Dual Radeon RX 6600 V3 8GB GDDR6",
+    "price": "5,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/_2023_-khung-sp-_1__e4dabe2bd54c49d39705d76f02e03c54_large.jpg",
+    "title": "Card màn hình VGA GIGABYTE Radeon RX 6600 EAGLE 8G (GV-R66EAGLE-8GD)",
+    "price": "5,250,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/inh-vga-asrock-amd-radeon-rx-6600-challenger-white-8gb-rx6600-clw-8g-6_900b509f9b984286a414029ffc799f51_large.jpg",
+    "title": "Card màn hình VGA ASRock AMD Radeon RX 6600 Challenger White 8GB",
+    "price": "5,300,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/_2023_-khung-sp-_1__d034b52d684543b980bf71577a460947_large.jpg",
+    "title": "VGA MSI RX 5600XT 6GB GDDR6 Gaming MX",
+    "price": "6,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/card-man-hinh-vga-sapphire-pulse-amd-radeon-rx-7600-8gb-gaming-oc-8gb4_4bf5f5095d6b46039c2cf93bc1f06ae9_large.jpg",
+    "title": "Card màn hình VGA Sapphire PULSE AMD Radeon RX 7600 8GB Gaming OC 8GB",
+    "price": "6,990,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/card-man-hinh-vga-sapphire-pulse-amd-radeon-rx-7600-xt-16gb_ec5f75c25b2b4dbb9685ba020f7c46cb_large.jpg",
+    "title": "Card màn hình VGA Sapphire Pulse AMD Radeon RX 7600 XT 16GB",
+    "price": "9,590,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA GIGABYTE Radeon RX 7600 XT GAMING OC 16G (GV-R76XTGAMING OC-16GD)",
+    "price": "10,190,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/an-hinh-vga-sapphire-nitro_-amd-radeon-rx-7700-xt-12gb-gaming-oc-12gb4_8a34544312c24a5ea62be49f168508f9_large.jpg",
+    "title": "Card màn hình VGA SAPPHIRE NITRO+ AMD Radeon RX 7700 XT 12GB Gaming OC 12GB",
+    "price": "12,990,000₫"
+  },
+  {
+    "imgSrc": null,
+    "title": "Card màn hình VGA GIGABYTE Radeon RX 7700 XT Gaming OC 12G (GV-R77XTGAMING OC-12GD)",
+    "price": "13,890,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/ard-man-hinh-vga-sapphire-nitro_-amd-radeon-rx-7800-xt-gaming-oc-16gb5_b459bfbd0c7a414eb2ca27dd13605deb_large.jpg",
+    "title": "Card màn hình VGA SAPPHIRE NITRO+ AMD Radeon RX 7800 XT GAMING OC 16GB",
+    "price": "14,890,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/ar_rx6900xt_formula_oc_5a59f8767fb74c288351c4fc2c92203a_large.jpg",
+    "title": "Card màn hình VGA ASRock Radeon RX 6900XT 16GB GDDR6 Formula OC (RX 6900XT OCF 16GB)",
+    "price": "18,900,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/1_ec32ea43e90445099e4ddf4a4433e661_large.jpg",
+    "title": "VGA Asus Radeon RX 6900XT 16GB GDDR6 TUF Gaming OC (TUF-RX 6900XT-O16GB-GAMING)",
+    "price": "20,990,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/v.rx6900xt.16g.as.tuf.top_7378755021a24de79a7afd770fa9f73b_large.jpg",
+    "title": "VGA Asus Radeon RX 6900XT 16GB GDDR6 TUF Gaming TOP Edition (TUF-RX 6900XT-T16GB-GAMING)",
+    "price": "21,990,000₫"
+  },
+  {
+    "imgSrc": "//product.hstatic.net/200000420363/product/card-man-hinh-vga-sapphire-nitro_-amd-radeon-rx-7900-xt-vapor-x-20gb-2_07fadbd99c4e4ee6b75c2eb2956ec819_large.jpg",
+    "title": "Card màn hình VGA Sapphire NITRO+ AMD Radeon RX 7900 XT Vapor-X 20GB",
+    "price": "22,990,000₫"
+  }
+]
