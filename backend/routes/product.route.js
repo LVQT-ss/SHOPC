@@ -6,7 +6,6 @@ import {
     updateProduct,
     updateProductActiveStatus,
     deleteProduct,
-    getAllProductsOrigin,
 } from '../controllers/product.controller.js';
 import { verifyToken } from '../middleware/verifyUser.js';
 
@@ -28,15 +27,11 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - userId
  *               - categoryId
  *               - productName
  *               - productDescription
  *               - productPrice
  *             properties:
- *               userId:
- *                 type: integer
- *                 example: 1
  *               categoryId:
  *                 type: integer
  *                 example: 2
@@ -82,22 +77,7 @@ router.post('/createProduct', createProduct);
  */
 router.get('/getAllProducts', getAllProducts);
 
-/**
- * @swagger
- * /api/products/getAllProductsOrigin:
- *   get:
- *     tags:
- *     - Products
- *     summary: Get all products (including inactive)
- *     security:
- *       - Authorization: []
- *     responses:
- *       200:
- *         description: List of all products retrieved successfully
- *       500:
- *         description: Server error
- */
-router.get('/getAllProductsOrigin', getAllProductsOrigin);
+
 
 /**
  * @swagger

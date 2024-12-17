@@ -3,16 +3,15 @@ import User from "../model/user.model.js";
 
 // create new product
 export const createProduct = async (req, res) => {
-    const { userId, categoryId, productName, productDescription, productPrice, image } = req.body;
+    const { categoryId, productName, productDescription, productPrice, image } = req.body;
 
     // Validate required fields
-    if (!userId || !categoryId || !productName || !productDescription || productPrice === undefined) {
+    if (!categoryId || !productName || !productDescription || productPrice === undefined) {
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
     try {
         const newProduct = await Product.create({
-            userId,
             categoryId,
             productName,
             productDescription,
@@ -26,36 +25,16 @@ export const createProduct = async (req, res) => {
     }
 };
 // Lấy tất cả các sản phẩm (bao gồm cả sản phẩm không hoạt động)
-export const getAllProductsOrigin = async (req, res) => {
-    try {
-        const products = await Product.findAll({
-            include: {
-                model: User,
-                attributes: ['userId', 'username'],
-            },
-        });
-        res.status(200).json(products);
-    } catch (err) {
-        console.error('Error fetching products:', err);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-// Lấy tất cả các sản phẩm 
 export const getAllProducts = async (req, res) => {
     try {
-        const products = await Product.findAll({
-            where: { isActive: 'active' }, // Thêm điều kiện để lấy sản phẩm có isActive là true
-            include: {
-                model: User,
-                attributes: ['userId', 'username'],
-            },
-        });
+        const products = await Product.findAll();
         res.status(200).json(products);
     } catch (err) {
         console.error('Error fetching products:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 
 // Lấy sản phẩm theo ID 
 export const getProductById = async (req, res) => {
@@ -67,10 +46,6 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findOne({
             where: { productId },
-            include: {
-                model: User,
-                attributes: ['userId', 'username'],
-            },
         });
 
         if (!product) {
