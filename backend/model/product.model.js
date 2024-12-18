@@ -22,7 +22,7 @@ const Product = sequelize.define('Product', {
     },
     isActive: {
         type: DataTypes.ENUM('active', 'inActive'),
-        defaultValue: 'inActive',
+        defaultValue: 'active',
     },
     image: {
         type: DataTypes.STRING,

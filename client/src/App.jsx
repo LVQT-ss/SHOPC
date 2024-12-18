@@ -14,12 +14,12 @@ import UpdaetPost from "./pages/UpdatePost.jsx";
 import PostPage from "./pages/PostPage.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Search from "./pages/Search.jsx";
-import SignIn from './pages/SignIn.jsx';
+import SignIn from "./pages/SignIn.jsx";
 
 function App() {
   return (
     <BrowserRouter>
-    <ScrollToTop/>
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -27,14 +27,12 @@ function App() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/search" element={<Search />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Route>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<PrivateRoute />}></Route>
 
-        <Route element={<OnlyAdminPrivateRoute />}>
-          <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/update-post/:postId" element={<UpdaetPost />} />
-        </Route>
+        <Route path="/create-post" element={<CreatePost />} />
+        <Route path="/update-post/:postId" element={<UpdaetPost />} />
+        <Route element={<OnlyAdminPrivateRoute />}></Route>
 
         <Route path="/projects" element={<Projects />} />
         <Route path="/post/:postSlug" element={<PostPage />} />
