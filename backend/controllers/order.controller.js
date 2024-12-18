@@ -55,7 +55,7 @@ export const createOrder = async (req, res) => {
             orderNumber,
             orderDate: '2024-12-18', // Hardcoded date as requested
             orderTotal: totalAmount,
-            orderStatus: orderStatus || 'pending'
+            orderStatus: orderStatus || 'active'
         }, { transaction });
 
         // Create order details
@@ -179,126 +179,141 @@ export const getActiveOrders = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
     try {
+        const { orderId } = req.params;
+
         // Validate order ID
-        if (!req.params.orderId) {
+        if (!orderId) {
             return res.status(400).json({
-                message: 'Order ID is required'
+                message: 'Order ID is required',
             });
         }
 
+        // Fetch the order
         const order = await Order.findOne({
-            where: {
-                orderId: req.params.orderId,
-                // Only allow access to own order or for admin/manager
-                ...(req.user.usertype !== 'Admin' && req.user.usertype !== 'Manager'
-                    ? { userId: req.user.userId }
-                    : {})
-            },
+            where: { orderId },
             include: [
                 {
                     model: OrderDetails,
-                    include: [Product]
+                    as: 'orderDetails',
+                    include: [
+                        {
+                            model: Product,
+                            as: 'product',
+                        },
+                    ],
                 },
                 {
                     model: User,
-                    attributes: ['username', 'email']
-                }
-            ]
+                    as: 'user',
+                    attributes: ['username', 'email'],
+                },
+            ],
         });
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found or unauthorized access'
+                message: 'Order not found',
             });
         }
 
-        res.status(200).json(order);
+
+
+        res.status(200).json({
+            message: 'Order retrieved successfully',
+            order,
+        });
     } catch (error) {
         res.status(500).json({
             message: 'Error fetching order',
-            error: error.message
+            error: error.message,
         });
     }
 };
+
+
 
 export const updateOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
         const { orderId } = req.params;
-        const {
-            orderDetails,
-            guestAddress,
-            guestPhoneNum,
-            orderStatus
-        } = req.body;
+        const { orderDetails, guestAddress, guestPhoneNum, orderStatus } = req.body;
 
         // Validate order ID
         if (!orderId) {
             return res.status(400).json({
-                message: 'Order ID is required'
+                message: 'Order ID is required',
             });
         }
 
-        // Find existing order
+        // Find the existing order
         const order = await Order.findOne({
             where: {
                 orderId,
                 ...(req.user.usertype !== 'Admin' && req.user.usertype !== 'Manager'
-                    ? { userId: req.user.userId }
-                    : {})
-            }
+                    ? { userId: req.user.userId } // Ensure user is authorized
+                    : {}),
+            },
         });
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found or unauthorized access'
+                message: 'Order not found or unauthorized access',
             });
         }
 
-        // Update order details
-        await order.update({
-            guestAddress: guestAddress || order.guestAddress,
-            guestPhoneNum: guestPhoneNum || order.guestPhoneNum,
-            orderStatus: orderStatus || order.orderStatus
-        }, { transaction });
+        // Update order fields
+        await order.update(
+            {
+                guestAddress: guestAddress || order.guestAddress,
+                guestPhoneNum: guestPhoneNum || order.guestPhoneNum,
+                orderStatus: orderStatus || order.orderStatus,
+            },
+            { transaction }
+        );
 
-        // If order details are provided, update or create new order details
+        // Update order details if provided
         if (orderDetails && orderDetails.length > 0) {
-            // Remove existing order details
+            // Delete existing order details
             await OrderDetails.destroy({
                 where: { orderId },
-                transaction
+                transaction,
             });
 
-            // Create new order details with validation
-            const validatedDetails = await Promise.all(orderDetails.map(async (detail) => {
-                const product = await Product.findOne({
-                    where: {
-                        productId: detail.productId,
-                        isActive: 'active'
+            // Validate and create new order details
+            const validatedDetails = await Promise.all(
+                orderDetails.map(async (detail) => {
+                    const product = await Product.findOne({
+                        where: {
+                            productId: detail.productId,
+                            isActive: 'active',
+                        },
+                    });
+
+                    if (!product) {
+                        throw new Error(`Product ${detail.productId} is not available`);
                     }
-                });
 
-                if (!product) {
-                    throw new Error(`Product ${detail.productId} is not available`);
-                }
+                    return {
+                        ...detail,
+                        productPrice: product.productPrice,
+                    };
+                })
+            );
 
-                return {
-                    ...detail,
-                    productPrice: product.productPrice
-                };
-            }));
-
-            // Create new order details
-            await Promise.all(validatedDetails.map(detail =>
-                OrderDetails.create({
-                    orderId,
-                    productId: detail.productId,
-                    quantity: detail.quantity,
-                    price: detail.productPrice
-                }, { transaction })
-            ));
+            await Promise.all(
+                validatedDetails.map((detail) =>
+                    OrderDetails.create(
+                        {
+                            orderId,
+                            productId: detail.productId,
+                            quantity: detail.quantity,
+                            price: detail.productPrice,
+                        },
+                        { transaction }
+                    )
+                )
+            );
         }
 
         await transaction.commit();
@@ -309,23 +324,30 @@ export const updateOrder = async (req, res) => {
             include: [
                 {
                     model: OrderDetails,
-                    include: [Product]
-                }
-            ]
+                    as: 'orderDetails', // Specify the alias defined in the association
+                    include: [
+                        {
+                            model: Product,
+                            as: 'product', // Specify the alias defined in the association
+                        },
+                    ],
+                },
+            ],
         });
 
         res.status(200).json({
             message: 'Order updated successfully',
-            order: updatedOrder
+            order: updatedOrder,
         });
     } catch (error) {
         await transaction.rollback();
         res.status(500).json({
             message: 'Error updating order',
-            error: error.message
+            error: error.message,
         });
     }
 };
+
 
 export const deleteOrder = async (req, res) => {
     const transaction = await sequelize.transaction();

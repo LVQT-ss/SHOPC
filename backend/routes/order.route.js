@@ -34,8 +34,8 @@ const router = express.Router();
  *                 example: 99.99
  *               orderStatus:
  *                 type: string
- *                 enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled']
- *                 example: 'pending'
+ *                 enum: ['active']
+ *                 example: 'active'
  *               orderItems:
  *                 type: array
  *                 items:
