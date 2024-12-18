@@ -11,8 +11,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://shopc-5tfn.onrender.com', // Proxy requests to the deployed backend
-        changeOrigin: true, // Ensure the origin of the request matches the target
-        secure: true, // Use secure HTTPS for the backend
+        secure: false, // Use secure HTTPS for the backend
       },
     },
   },
