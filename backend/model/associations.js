@@ -1,4 +1,3 @@
-// models/associations.js
 import User from './user.model.js';
 import Order from './order.model.js';
 import OrderDetails from './orderDetails.model.js';
@@ -12,7 +11,8 @@ function setupAssociations() {
         as: 'orders'
     });
     Order.belongsTo(User, {
-        foreignKey: 'userId'
+        foreignKey: 'userId',
+        as: 'user'
     });
 
     // Order and OrderDetails Associations
@@ -21,12 +21,14 @@ function setupAssociations() {
         as: 'orderDetails'
     });
     OrderDetails.belongsTo(Order, {
-        foreignKey: 'orderId'
+        foreignKey: 'orderId',
+        as: 'order'
     });
 
     // OrderDetails and Product Associations
     OrderDetails.belongsTo(Product, {
-        foreignKey: 'productId'
+        foreignKey: 'productId',
+        as: 'product'
     });
     Product.hasMany(OrderDetails, {
         foreignKey: 'productId',
@@ -35,7 +37,8 @@ function setupAssociations() {
 
     // Product and Category Associations
     Product.belongsTo(Category, {
-        foreignKey: 'categoryId'
+        foreignKey: 'categoryId',
+        as: 'category'
     });
     Category.hasMany(Product, {
         foreignKey: 'categoryId',

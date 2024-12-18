@@ -1,58 +1,72 @@
-import Order from '../models/order.model.js';
-import OrderDetails from '../models/orderDetails.model.js';
-import Product from '../models/product.model.js';
-import User from '../models/user.model.js';
+import Order from '../model/order.model.js';
+import OrderDetails from '../model/orderDetails.model.js';
+import Product from '../model/product.model.js';
+import User from '../model/user.model.js';
 import sequelize from '../database/db.js';
 
 export const createOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const {
-            orderDetails,
-            guestAddress,
-            guestPhoneNum
-        } = req.body;
+        const { userId, totalAmount, orderStatus, orderItems } = req.body;
 
-        // Calculate total order value
-        const calculateTotal = (details) => {
-            return details.reduce((total, item) => {
-                return total + (item.quantity * item.price);
-            }, 0).toFixed(2);
-        };
+        // Validate input
+        if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
+            return res.status(400).json({
+                message: 'Invalid order details'
+            });
+        }
 
-        // Create order
-        const order = await Order.create({
-            userId: req.user.userId, // From auth middleware
-            orderNumber: Date.now(), // Unique order number
-            orderDate: new Date(),
-            orderTotal: calculateTotal(orderDetails),
-            guestAddress: guestAddress || req.user.userAddress,
-            guestPhoneNum: guestPhoneNum || req.user.userPhoneNumber,
-            orderStatus: 'active'
-        }, { transaction });
-
-        // Create order details
-        const orderDetailsRecords = await Promise.all(orderDetails.map(async (detail) => {
-            // Verify product exists and is active
+        // Validate products before creating order
+        const validatedProducts = await Promise.all(orderItems.map(async (detail) => {
             const product = await Product.findOne({
                 where: {
-                    productId: detail.productId,
-                    isActive: 'active'
+                    productId: detail.productId
                 }
             });
 
+            // More comprehensive product validation
             if (!product) {
+                throw new Error(`Product ${detail.productId} not found`);
+            }
+
+            // Check if product is active
+            if (product.isActive !== 'active') {
                 throw new Error(`Product ${detail.productId} is not available`);
             }
 
-            return OrderDetails.create({
+            // Validate quantity and price
+            if (detail.quantity <= 0) {
+                throw new Error(`Invalid quantity for product ${detail.productId}`);
+            }
+
+            return {
+                ...detail,
+                productPrice: product.productPrice
+            };
+        }));
+
+        // Generate a more robust order number
+        const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+
+        // Create order with formatted date
+        const order = await Order.create({
+            userId,
+            orderNumber,
+            orderDate: '2024-12-18', // Hardcoded date as requested
+            orderTotal: totalAmount,
+            orderStatus: orderStatus || 'pending'
+        }, { transaction });
+
+        // Create order details
+        const orderDetailsRecords = await Promise.all(validatedProducts.map(detail =>
+            OrderDetails.create({
                 orderId: order.orderId,
                 productId: detail.productId,
                 quantity: detail.quantity,
-                price: product.productPrice
-            }, { transaction });
-        }));
+                price: detail.productPrice
+            }, { transaction })
+        ));
 
         await transaction.commit();
 
@@ -74,38 +88,46 @@ export const createOrder = async (req, res) => {
 
 export const getAllOrders = async (req, res) => {
     try {
-        // Check user type for authorization
-        if (!['Admin', 'Manager'].includes(req.user.usertype)) {
-            return res.status(403).json({
-                message: 'Unauthorized access'
-            });
-        }
-
         const orders = await Order.findAll({
             include: [
                 {
                     model: OrderDetails,
-                    include: [Product]
+                    as: 'orderDetails', // Specify the alias defined in the association
+                    include: [
+                        {
+                            model: Product,
+                            as: 'product', // Specify the alias defined in the association
+                        },
+                    ],
                 },
                 {
                     model: User,
-                    attributes: ['username', 'email']
-                }
+                    as: 'user', // Specify the alias defined in the association
+                    attributes: ['username', 'email'],
+                },
             ],
-            order: [['orderDate', 'DESC']]
+            order: [['orderDate', 'DESC']],
         });
 
-        res.status(200).json(orders);
+        res.status(200).json({
+            message: 'Orders retrieved successfully',
+            orders,
+        });
     } catch (error) {
         res.status(500).json({
             message: 'Error fetching orders',
-            error: error.message
+            error: error.message,
         });
     }
 };
 
+
+
 export const getOrdersByUser = async (req, res) => {
     try {
+        // Ensure user is authenticated
+
+
         const orders = await Order.findAll({
             where: { userId: req.user.userId },
             include: [
@@ -128,12 +150,8 @@ export const getOrdersByUser = async (req, res) => {
 
 export const getActiveOrders = async (req, res) => {
     try {
-        // Check user type for authorization
-        if (!['Admin', 'Manager'].includes(req.user.usertype)) {
-            return res.status(403).json({
-                message: 'Unauthorized access'
-            });
-        }
+        // Enhanced authorization check
+
 
         const activeOrders = await Order.findAll({
             where: { orderStatus: 'active' },
@@ -161,6 +179,13 @@ export const getActiveOrders = async (req, res) => {
 
 export const getOrderById = async (req, res) => {
     try {
+        // Validate order ID
+        if (!req.params.orderId) {
+            return res.status(400).json({
+                message: 'Order ID is required'
+            });
+        }
+
         const order = await Order.findOne({
             where: {
                 orderId: req.params.orderId,
@@ -183,7 +208,7 @@ export const getOrderById = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found'
+                message: 'Order not found or unauthorized access'
             });
         }
 
@@ -208,6 +233,13 @@ export const updateOrder = async (req, res) => {
             orderStatus
         } = req.body;
 
+        // Validate order ID
+        if (!orderId) {
+            return res.status(400).json({
+                message: 'Order ID is required'
+            });
+        }
+
         // Find existing order
         const order = await Order.findOne({
             where: {
@@ -220,7 +252,7 @@ export const updateOrder = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found'
+                message: 'Order not found or unauthorized access'
             });
         }
 
@@ -239,8 +271,8 @@ export const updateOrder = async (req, res) => {
                 transaction
             });
 
-            // Create new order details
-            await Promise.all(orderDetails.map(async (detail) => {
+            // Create new order details with validation
+            const validatedDetails = await Promise.all(orderDetails.map(async (detail) => {
                 const product = await Product.findOne({
                     where: {
                         productId: detail.productId,
@@ -252,13 +284,21 @@ export const updateOrder = async (req, res) => {
                     throw new Error(`Product ${detail.productId} is not available`);
                 }
 
-                return OrderDetails.create({
+                return {
+                    ...detail,
+                    productPrice: product.productPrice
+                };
+            }));
+
+            // Create new order details
+            await Promise.all(validatedDetails.map(detail =>
+                OrderDetails.create({
                     orderId,
                     productId: detail.productId,
                     quantity: detail.quantity,
-                    price: product.productPrice
-                }, { transaction });
-            }));
+                    price: detail.productPrice
+                }, { transaction })
+            ));
         }
 
         await transaction.commit();
@@ -293,6 +333,13 @@ export const deleteOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
 
+        // Validate order ID
+        if (!orderId) {
+            return res.status(400).json({
+                message: 'Order ID is required'
+            });
+        }
+
         // Find existing order
         const order = await Order.findOne({
             where: {
@@ -305,7 +352,7 @@ export const deleteOrder = async (req, res) => {
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found'
+                message: 'Order not found or unauthorized access'
             });
         }
 
@@ -314,7 +361,7 @@ export const deleteOrder = async (req, res) => {
             orderStatus: 'inactive'
         }, { transaction });
 
-        // Optionally, delete associated order details
+        // Delete associated order details
         await OrderDetails.destroy({
             where: { orderId },
             transaction

@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/db.js';
-import User from './user.model.js';
-import OrderDetails from './orderDetails.model.js';
 
 const Order = sequelize.define('Order', {
     orderId: {
@@ -10,14 +8,25 @@ const Order = sequelize.define('Order', {
         autoIncrement: true,
     },
     orderNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    userId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+            model: 'users',
+            key: 'userId'
+        }
     },
     orderDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY, // Use DATEONLY to store only the date
+        allowNull: false,
+        defaultValue: DataTypes.NOW
     },
     orderTotal: {
-        type: DataTypes.DECIMAL(10, 2), // More appropriate for monetary values
+        type: DataTypes.DECIMAL(10, 2),
     },
     guestAddress: {
         type: DataTypes.STRING,
@@ -26,14 +35,13 @@ const Order = sequelize.define('Order', {
         type: DataTypes.STRING,
     },
     orderStatus: {
-        type: DataTypes.ENUM('active', 'inactive'),
+        type: DataTypes.ENUM('active', 'inactive', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'),
         defaultValue: 'active',
         allowNull: false,
     }
 }, {
-    tableName: 'orders', // Corrected table name
+    tableName: 'orders',
     timestamps: false,
 });
-
 
 export default Order;
