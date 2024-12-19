@@ -1,0 +1,97 @@
+.pond-profile-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
+  height: auto;
+
+  .pond-profile-header {
+    width: 100%;
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+
+  .pond-profile-body {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .pond-profile-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+
+      .pond-form-container {
+        width: 90%;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+
+        form {
+          display: flex;
+          flex-wrap: wrap;
+          width: 100%;
+          max-width: 900px;
+          gap: 20px;
+
+          .ant-form-item {
+            flex: 1 1 calc(50% - 20px);
+            min-width: 250px;
+          }
+
+          .pond-profile-button-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 20px;
+          }
+        }
+      }
+
+      .koi-profile-img {
+        max-width: 50%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      .pond-profile-info > div {
+        flex-grow: 1;
+      }
+
+      .fish-count-text {
+        display: flex;
+        align-items: center;
+        .fish-count {
+          color: black;
+        }
+      }
+
+      .submit-pond-edit-button {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+      .submit-pond-edit-button button {
+        justify-content: end;
+        background-color: rgb(180, 0, 0);
+        color: white;
+        height: 35px;
+        width: auto;
+        border-radius: 7px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        font-size: 15px;
+
+        &:hover {
+          background-color: #b76363;
+        }
+      }
+    }
+  }
+}

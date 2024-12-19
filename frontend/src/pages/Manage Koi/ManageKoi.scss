@@ -1,0 +1,72 @@
+.manage-koi-page {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 40px; 
+  padding: 25px;
+  height: 100vh;
+  margin-bottom: 50px;
+
+  .manage-koi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgb(180, 0, 0); 
+    border-radius: 20px; 
+    height: 300px;
+    padding: 20px;
+    text-decoration: none; 
+    box-shadow: 2px 2px 5px rgba(95, 91, 91, 0.764); 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.63); 
+      border-color: #000101; 
+      background-color: rgb(192, 48, 5);
+    }
+
+    .manage-koi-logos {
+      width: 105px; 
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .manage-koi-text {
+      text-decoration: none;
+      color: white;
+    }
+  }
+
+  .customer-recommendations-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgb(180, 0, 0); 
+    border-radius: 20px; 
+    height: 300px;
+    padding: 20px;
+    text-decoration: none; 
+    box-shadow: 2px 2px 5px rgba(95, 91, 91, 0.764); 
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.63); 
+      border-color: #000101; 
+      background-color: rgb(192, 48, 5);
+    }
+
+    .manage-koi-logos {
+      width: 105px; 
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .manage-koi-text {
+      text-decoration: none;
+      color: white;
+    }
+  }
+}
