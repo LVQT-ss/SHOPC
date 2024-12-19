@@ -1,7 +1,8 @@
 import { Button, Select, TextInput } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ProductCard from "../components/PostCard.jsx";
+import ProductCard from "../components/PostCard";
+import { getAllProducts } from "../Utils/ApiFunctions";
 
 const categories = [
   {
@@ -90,7 +91,6 @@ export default function ProductSearch() {
     const minPriceFromUrl = urlParams.get("minPrice") || "";
     const maxPriceFromUrl = urlParams.get("maxPrice") || "";
 
-    // Update search data if URL parameters exist
     setSearchData({
       searchTerm: searchTermFromUrl,
       sort: sortFromUrl,
@@ -102,21 +102,54 @@ export default function ProductSearch() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const searchQuery = urlParams.toString();
-        const response = await fetch(
-          `/api/products/getAllProducts?${searchQuery}`
-        );
+        const data = await getAllProducts();
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
+        // Filter and sort the products based on search criteria
+        let filteredProducts = data;
+
+        if (searchTermFromUrl) {
+          filteredProducts = filteredProducts.filter(
+            (product) =>
+              product.productName
+                .toLowerCase()
+                .includes(searchTermFromUrl.toLowerCase()) ||
+              product.productDescription
+                .toLowerCase()
+                .includes(searchTermFromUrl.toLowerCase())
+          );
         }
 
-        const data = await response.json();
-        setProducts(data || []); // Adjust based on actual API response
-        setLoading(false);
+        if (categoryFromUrl) {
+          filteredProducts = filteredProducts.filter(
+            (product) => product.categoryId.toString() === categoryFromUrl
+          );
+        }
 
-        // Implement pagination logic
-        setShowMore((data || []).length === 9);
+        if (minPriceFromUrl) {
+          filteredProducts = filteredProducts.filter(
+            (product) =>
+              parseFloat(product.productPrice) >= parseFloat(minPriceFromUrl)
+          );
+        }
+
+        if (maxPriceFromUrl) {
+          filteredProducts = filteredProducts.filter(
+            (product) =>
+              parseFloat(product.productPrice) <= parseFloat(maxPriceFromUrl)
+          );
+        }
+
+        // Sort products
+        filteredProducts.sort((a, b) => {
+          if (sortFromUrl === "desc") {
+            return parseFloat(b.productPrice) - parseFloat(a.productPrice);
+          }
+          return parseFloat(a.productPrice) - parseFloat(b.productPrice);
+        });
+
+        setProducts(filteredProducts);
+        setShowMore(filteredProducts.length === 9);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching products:", error);
         setProducts([]);
@@ -136,7 +169,6 @@ export default function ProductSearch() {
     e.preventDefault();
     const urlParams = new URLSearchParams();
 
-    // Add non-empty parameters to URL
     Object.entries(searchData).forEach(([key, value]) => {
       if (value !== "" && value !== null) {
         urlParams.set(key, value);
@@ -153,18 +185,10 @@ export default function ProductSearch() {
     urlParams.set("startIndex", numberOfProducts);
 
     try {
-      const searchQuery = urlParams.toString();
-      const response = await fetch(
-        `/api/products/getAllProducts?${searchQuery}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch more products");
-      }
-
-      const data = await response.json();
-      setProducts((prev) => [...prev, ...data.products]);
-      setShowMore(data.products.length === 9);
+      const data = await getAllProducts();
+      const newProducts = data.slice(numberOfProducts, numberOfProducts + 9);
+      setProducts((prev) => [...prev, ...newProducts]);
+      setShowMore(newProducts.length === 9);
     } catch (error) {
       console.error("Error fetching more products:", error);
     }

@@ -31,7 +31,7 @@ const options = {
         url: "http://localhost:3000",
         description: "Local server"
       }, {
-        url: "https://nodejs-sqlserver-1.onrender.com",
+        url: "https://shopc-5tfn.onrender.com",
         description: "Live server"
       },
     ]

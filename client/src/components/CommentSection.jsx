@@ -77,7 +77,6 @@ export default function CommentSection({ postId }) {
           const data = await res.json();
           setComments(data);
         }
-       
       } catch (error) {
         console.log(error.message);
       }
@@ -202,7 +201,10 @@ export default function CommentSection({ postId }) {
               Are you sure you want to delete this post?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color="failure" onClick={()=>handleDelete(commentToDelete)}>
+              <Button
+                color="failure"
+                onClick={() => handleDelete(commentToDelete)}
+              >
                 Yes, I'm sure
               </Button>
               <Button color="gray" onClick={() => setShowModal(false)}>

@@ -10,6 +10,7 @@ import {
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { app } from "../firebase";
+import { createProduct } from "../Utils/ApiFunctions";
 
 const categories = [
   {
@@ -138,25 +139,11 @@ const CreateProduct = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/products/createProduct", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setPublishError(data.message || "Failed to create product");
-        return;
-      }
-
-      navigate("/products"); // Adjust route as needed
+      await createProduct(formData);
+      navigate("/products");
       setPublishError(null);
     } catch (error) {
-      setPublishError("Something went wrong");
+      setPublishError(error.message || "Something went wrong");
       console.error(error);
     }
   };
