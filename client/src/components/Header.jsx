@@ -7,7 +7,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { toggleTheme } from "../redux/theme/themeSlice";
 import { signoutSuccess } from "../redux/user/userSlice";
-
+import { GrCart } from "react-icons/gr";
+import { toggleStatusTab } from "../redux/store/cart";
 const Header = () => {
   const path = useLocation().pathname;
   const location = useLocation();
@@ -48,6 +49,18 @@ const Header = () => {
     navigate(`/search?${searchQuery}`);
   };
 
+  // const [totalQuantity, setTotalQuantity] = useState(0);
+  // const carts = useSelector((store) => store.cart.items);
+
+  // useEffect(() => {
+  //   let total = 0;
+  //   carts.forEach((item) => (total += item.quantity));
+  //   setTotalQuantity(total);
+  // }, [carts]);
+  // const handleOpenTabCart = () => {
+  //   dispatch(toggleStatusTab());
+  // };
+
   return (
     <Navbar className="border-b-2">
       <Link
@@ -82,6 +95,18 @@ const Header = () => {
         >
           {theme === "light" ? <FaSun /> : <FaMoon />}
         </Button>
+        <Button
+          className="w-12 h-10 hidden sm:inline"
+          color="gray"
+          pill
+          onClick={() => dispatch(toggleTheme())}
+        >
+          <GrCart />
+          <span className="absolute top-2/3 right-1/2 bg-red-500 text-white text-sm w-5 h-5 rounded-full flex justify-center items-center">
+            {/* {totalQuantity} */} 1
+          </span>
+        </Button>
+
         {currentUser ? (
           <Dropdown
             arrowIcon={false}

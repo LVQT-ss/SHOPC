@@ -1,15 +1,23 @@
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/store/cart";
 
 export default function PostCard({ product }) {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ productId: product.productId, quantity: 1 }));
+  };
+
   return (
-    <div className="group relative w-full border border-teal-500 hover:border-2 h-[400px] overflow-hidden rounded-lg sm:w-[325px] transition-all">
-      <Link to={`/product/${product.productId}`}>
+    <div className="group relative w-full border border-teal-500 hover:border-2 h-[420px] overflow-hidden rounded-lg sm:w-[325px] transition-all">
+      <div className="cursor-pointer">
         <img
           src={product.image || "/placeholder-image.png"}
           alt={product.productName}
           className="h-[260px] w-full object-cover group-hover:h-[200px] transition-all duration-300 z-20"
         />
-      </Link>
+      </div>
       <div className="p-3 flex flex-col gap-2">
         <p className="text-lg font-semibold line-clamp-2">
           {product.productName}
@@ -29,12 +37,23 @@ export default function PostCard({ product }) {
             {product.isActive === "active" ? "In Stock" : "Out of Stock"}
           </span>
         </div>
-        <Link
-          to={`/product/${product.productId}`}
-          className="z-10 group-hover:bottom-0 absolute bottom-[-200px] left-0 right-0 border border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white transition-all duration-300 text-center py-2 rounded-md !rounded-tl-none m-2"
-        >
-          View Details
-        </Link>
+        <div className="flex gap-2 mt-1">
+          <button
+            onClick={() =>
+              (window.location.href = `/product/${product.productId}`)
+            }
+            className="flex-1 bg-teal-500 text-white py-2 rounded-md text-center hover:bg-teal-600 transition-colors"
+          >
+            View Details
+          </button>
+          <button
+            onClick={handleAddToCart}
+            disabled={product.isActive !== "active"}
+            className="flex-1 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
     </div>
   );
