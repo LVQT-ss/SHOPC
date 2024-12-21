@@ -9,7 +9,7 @@ import { toggleTheme } from "../redux/theme/themeSlice";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { GrCart } from "react-icons/gr";
 import { toggleStatusTab } from "../redux/store/cart";
-import CartSidebar from "./productCart/CartSidebar.jsx";
+import CartSidebar from "./productCart/cartSidebar";
 import { toggleCart } from "../redux/cart/cartSlice";
 const Header = () => {
   const path = useLocation().pathname;
