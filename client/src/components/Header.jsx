@@ -9,6 +9,8 @@ import { toggleTheme } from "../redux/theme/themeSlice";
 import { signoutSuccess } from "../redux/user/userSlice";
 import { GrCart } from "react-icons/gr";
 import { toggleStatusTab } from "../redux/store/cart";
+import CartSidebar from "./productCart/cartSidebar";
+import { toggleCart } from "../redux/cart/cartSlice";
 const Header = () => {
   const path = useLocation().pathname;
   const location = useLocation();
@@ -60,7 +62,10 @@ const Header = () => {
   // const handleOpenTabCart = () => {
   //   dispatch(toggleStatusTab());
   // };
-
+  const handleCartClick = () => {
+    dispatch(toggleCart());
+  };
+  const { items } = useSelector((state) => state.cart);
   return (
     <Navbar className="border-b-2">
       <Link
@@ -99,14 +104,14 @@ const Header = () => {
           className="w-12 h-10 hidden sm:inline"
           color="gray"
           pill
-          onClick={() => dispatch(toggleTheme())}
+          onClick={handleCartClick}
         >
           <GrCart />
           <span className="absolute top-2/3 right-1/2 bg-red-500 text-white text-sm w-5 h-5 rounded-full flex justify-center items-center">
-            {/* {totalQuantity} */} 1
+            {items.length}
           </span>
         </Button>
-
+        <CartSidebar />
         {currentUser ? (
           <Dropdown
             arrowIcon={false}

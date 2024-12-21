@@ -6,7 +6,7 @@ export default function PostCard({ product }) {
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ productId: product.productId, quantity: 1 }));
+    dispatch(addToCart({ product, quantity: 1 }));
   };
 
   return (
