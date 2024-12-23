@@ -101,7 +101,7 @@ const Header = () => {
           {theme === "light" ? <FaSun /> : <FaMoon />}
         </Button>
         <Button
-          className="w-12 h-10 hidden sm:inline"
+          className="w-12 h-10"
           color="gray"
           pill
           onClick={handleCartClick}

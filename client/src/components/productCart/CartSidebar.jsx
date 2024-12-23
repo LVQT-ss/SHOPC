@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { X, Plus, Minus, ShoppingCart } from "lucide-react";
+import { useEffect, useRef } from "react";
 import {
   toggleCart,
   removeFromCart,
@@ -10,11 +11,28 @@ import {
 const CartSidebar = () => {
   const dispatch = useDispatch();
   const { items, isOpen } = useSelector((state) => state.cart);
+  const sidebarRef = useRef(null);
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.productPrice * item.quantity,
     0
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        dispatch(toggleCart());
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, dispatch]);
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -33,7 +51,10 @@ const CartSidebar = () => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-      <div className="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out">
+      <div
+        ref={sidebarRef}
+        className="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out"
+      >
         {/* Header */}
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold flex items-center gap-2">
