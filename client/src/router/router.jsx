@@ -19,8 +19,20 @@ const Layout = () => {
     <div>
       <ScrollToTop />
       <Header />
-      <Outlet />
+      <div className="min-h-screen">
+        <Outlet />
+      </div>
       <FooterCom />
+    </div>
+  );
+};
+
+// Error boundary for route errors
+const ErrorBoundary = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-2xl font-bold">Oops!</h1>
+      <p>Sorry, an unexpected error has occurred.</p>
     </div>
   );
 };
@@ -29,21 +41,22 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
-        path: "/",
+        index: true,
         element: <Home />,
       },
       {
-        path: "/about",
+        path: "about",
         element: <About />,
       },
       {
-        path: "/search",
+        path: "search",
         element: <Search />,
       },
       {
-        path: "/dashboard",
+        path: "dashboard",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
             <Dashboard />
@@ -51,7 +64,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/create-post",
+        path: "create-post",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
             <CreatePost />
@@ -59,7 +72,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/update-post/:postId",
+        path: "update-post/:postId",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
             <UpdaetPost />
@@ -67,7 +80,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/projects",
+        path: "projects",
         element: (
           <ProtectedRoute allowedRoles={["admin"]}>
             <Projects />
@@ -75,18 +88,22 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/post/:postSlug",
+        path: "post/:postSlug",
         element: <PostPage />,
       },
     ],
   },
   {
-    path: "/sign-in",
+    path: "sign-in",
     element: <SignIn />,
   },
   {
-    path: "/sign-up",
+    path: "sign-up",
     element: <SignUp />,
+  },
+  {
+    path: "*",
+    element: <ErrorBoundary />,
   },
 ]);
 
