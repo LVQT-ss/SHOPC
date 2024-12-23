@@ -12,6 +12,123 @@ const getHeader = () => {
 	};
 };
 
+
+// Auth APIs
+async function register(userData) {
+	try {
+		const response = await api.post("/auth/register", userData);
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Registration failed");
+	}
+}
+
+async function login(credentials) {
+	try {
+		const response = await api.post("/auth/login", credentials);
+		localStorage.setItem("token", response.data.token);
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Login failed");
+	}
+}
+
+async function requestPasswordReset(email) {
+	try {
+		const response = await api.post("/auth/forgot-password", { email });
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Password reset request failed");
+	}
+}
+
+async function resetPassword(token, newPassword) {
+	try {
+		const response = await api.post("/auth/reset-password", { token, newPassword });
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Password reset failed");
+	}
+}
+
+// Order APIs
+async function createOrder(orderData) {
+	try {
+		const response = await api.post("/orders/create", orderData, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error creating order");
+	}
+}
+
+async function getAllOrders() {
+	try {
+		const response = await api.get("/orders", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching orders");
+	}
+}
+
+async function getActiveOrders() {
+	try {
+		const response = await api.get("/orders/active", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching active orders");
+	}
+}
+
+async function getOrdersByUser() {
+	try {
+		const response = await api.get("/orders/user", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching user orders");
+	}
+}
+
+async function getOrderById(orderId) {
+	try {
+		const response = await api.get(`/orders/${orderId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error fetching order: ${error.message}`);
+	}
+}
+
+async function updateOrder(orderId, orderData) {
+	try {
+		const response = await api.put(`/orders/${orderId}`, orderData, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error updating order");
+	}
+}
+
+async function deleteOrder(orderId) {
+	try {
+		const response = await api.delete(`/orders/${orderId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error deleting order");
+	}
+}
+
 // Category APIs
 async function createCategory(categoryData) {
 	try {
@@ -129,6 +246,20 @@ async function deleteProduct(productId) {
 }
 
 export {
+	// Auth exports
+	register,
+	login,
+	requestPasswordReset,
+	resetPassword,
+
+	// Order exports
+	createOrder,
+	getAllOrders,
+	getActiveOrders,
+	getOrdersByUser,
+	getOrderById,
+	updateOrder,
+	deleteOrder,
 	// Category exports
 	createCategory,
 	getAllCategories,
@@ -143,4 +274,5 @@ export {
 	updateProduct,
 	updateProductActiveStatus,
 	deleteProduct
+
 };

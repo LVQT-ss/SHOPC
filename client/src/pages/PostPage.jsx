@@ -2,7 +2,7 @@ import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CallToAction from "../components/CallToAction";
-import CommentSection from "../components/CommentSection";
+import CommentSection from "../components/Comment/CommentSection";
 import PostCard from "../components/PostCard";
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -34,8 +34,6 @@ export default function PostPage() {
     fetchPost();
   }, [postSlug]);
 
-
-  
   useEffect(() => {
     try {
       const fetchRecentPosts = async () => {
@@ -85,15 +83,14 @@ export default function PostPage() {
         className="p-3 max-w-2xl mx-auto w-full post-content"
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
-       <div className='max-w-4xl mx-auto w-full'>
+      <div className="max-w-4xl mx-auto w-full">
         <CallToAction />
       </div>
       <CommentSection postId={post._id} />
 
-      
-      <div className='flex flex-col justify-center items-center mb-5'>
-        <h1 className='text-xl mt-5'>Recent articles</h1>
-        <div className='flex flex-wrap gap-5 mt-5 justify-center'>
+      <div className="flex flex-col justify-center items-center mb-5">
+        <h1 className="text-xl mt-5">Recent articles</h1>
+        <div className="flex flex-wrap gap-5 mt-5 justify-center">
           {recentPosts &&
             recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
         </div>

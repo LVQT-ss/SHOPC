@@ -5,12 +5,12 @@ import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { toggleTheme } from "../redux/theme/themeSlice";
-import { signoutSuccess } from "../redux/user/userSlice";
+import { toggleTheme } from "../../redux/theme/themeSlice.js";
+import { signoutSuccess } from "../../redux/user/userSlice.js";
 import { GrCart } from "react-icons/gr";
-import { toggleStatusTab } from "../redux/store/cart";
-import CartSidebar from "./productCart/CartSidebar.jsx";
-import { toggleCart } from "../redux/cart/cartSlice";
+import { toggleStatusTab } from "../../redux/store/cart.js";
+import CartSidebar from "../productCart/CartSidebar.jsx";
+import { toggleCart } from "../../redux/cart/cartSlice.js";
 const Header = () => {
   const path = useLocation().pathname;
   const location = useLocation();
@@ -148,8 +148,8 @@ const Header = () => {
         <Navbar.Link active={path === "/about"} as={"div"}>
           <Link to="/about">About</Link>
         </Navbar.Link>
-        <Navbar.Link active={path === "/projects"} as={"div"}>
-          <Link to="/projects">Projects</Link>
+        <Navbar.Link active={path === "/blog"} as={"div"}>
+          <Link to="/blog">blog</Link>
         </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>

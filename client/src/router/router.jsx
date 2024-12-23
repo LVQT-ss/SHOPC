@@ -9,8 +9,8 @@ import CreatePost from "../pages/CreatePost";
 import UpdaetPost from "../pages/UpdatePost";
 import PostPage from "../pages/PostPage";
 import Search from "../pages/Search";
-import Header from "../components/Header";
-import FooterCom from "../components/Footer";
+import Header from "../components/Header/Header";
+import FooterCom from "../components/Footer/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import ProtectedRoute from "./ProtectedRoute";
 
