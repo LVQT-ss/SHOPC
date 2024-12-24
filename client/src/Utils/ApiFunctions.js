@@ -11,6 +11,14 @@ const getHeader = () => {
 		"Content-Type": "application/json"
 	};
 };
+async function signout() {
+	try {
+		localStorage.removeItem("token"); // Remove the token from localStorage
+		return { success: true };
+	} catch (error) {
+		throw new Error("Signout failed");
+	}
+}
 
 
 // Auth APIs
@@ -251,6 +259,7 @@ export {
 	login,
 	requestPasswordReset,
 	resetPassword,
+	signout,
 
 	// Order exports
 	createOrder,

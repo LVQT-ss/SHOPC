@@ -11,6 +11,7 @@ import { GrCart } from "react-icons/gr";
 import { toggleStatusTab } from "../../redux/store/cart.js";
 import CartSidebar from "../productCart/CartSidebar.jsx";
 import { toggleCart } from "../../redux/cart/cartSlice.js";
+import { signout } from "../../Utils/ApiFunctions.js";
 const Header = () => {
   const path = useLocation().pathname;
   const location = useLocation();
@@ -27,28 +28,22 @@ const Header = () => {
     }
   }, [location.search]);
 
-  const handleSignout = async () => {
-    try {
-      const res = await fetch("/api/user/signout", {
-        method: "POST",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(signoutSuccess());
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const urlParams = new URLSearchParams(location.search);
     urlParams.set("searchTerm", searchTerm);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
+  };
+
+  const handleSignout = async () => {
+    try {
+      await signout(); // Call the signout function
+      dispatch(signoutSuccess()); // Update Redux state
+      navigate("/sign-in"); // Redirect to sign-in page
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   // const [totalQuantity, setTotalQuantity] = useState(0);
