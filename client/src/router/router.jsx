@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <Dashboard />
           </ProtectedRoute>
         ),
@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
       {
         path: "create-post",
         element: (
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <CreatePost />
           </ProtectedRoute>
         ),
@@ -75,7 +75,7 @@ export const router = createBrowserRouter([
       {
         path: "update-post/:postId",
         element: (
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <UpdaetPost />
           </ProtectedRoute>
         ),
@@ -83,7 +83,7 @@ export const router = createBrowserRouter([
       {
         path: "projects",
         element: (
-          <ProtectedRoute allowedRoles={["admin"]}>
+          <ProtectedRoute allowedRoles={["Admin"]}>
             <Projects />
           </ProtectedRoute>
         ),

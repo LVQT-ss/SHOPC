@@ -19,15 +19,13 @@ export default function SignIn() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    // Clear error when user starts typing
     if (error) setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null); // Clear any previous errors
+    setError(null);
 
-    // Validate form inputs
     if (!formData.email || !formData.password) {
       setError("Please fill in all fields");
       return;
@@ -39,8 +37,16 @@ export default function SignIn() {
         username: formData.email,
         password: formData.password,
       });
+
+      // Store the entire response in Redux
       dispatch(signInSuccess(data));
-      navigate("/");
+
+      // Navigate based on user type
+      if (data.user.usertype === "Admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       dispatch(signInFailure(error.message));
       setError(error.message);
