@@ -11,30 +11,53 @@ import { login } from "../Utils/ApiFunctions";
 import OAuth from "../components/OAuth";
 
 export default function SignIn() {
-  const [formData, setFormData] = useState({});
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState(null);
+  const { loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null); // Clear any previous errors
+
+    // Validate form inputs
     if (!formData.email || !formData.password) {
-      return dispatch(signInFailure("Please fill all the fields"));
+      setError("Please fill in all fields");
+      return;
     }
+
     try {
-      dispatch(signInStart());
+      dispatch(signInStart()); // Set loading to true
       const data = await login({
         username: formData.email,
         password: formData.password,
       });
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data)); // Set loading to false and update user data
       navigate("/");
     } catch (error) {
-      dispatch(signInFailure(error.message));
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with an error
+        dispatch(
+          signInFailure(error.response.data.message || "Invalid credentials")
+        );
+        setError(error.response.data.message || "Invalid credentials");
+      } else if (error.request) {
+        // No response received
+        dispatch(signInFailure("Network error. Please try again."));
+        setError("Network error. Please try again.");
+      } else {
+        // Something else went wrong
+        dispatch(signInFailure("An unexpected error occurred"));
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
@@ -52,14 +75,25 @@ export default function SignIn() {
         </div>
 
         <div className="flex-1">
+          {error && (
+            <Alert
+              className="mb-4"
+              color="failure"
+              onDismiss={() => setError(null)}
+            >
+              <span className="font-medium">Error!</span> {error}
+            </Alert>
+          )}
+
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div>
               <Label value="Username" />
               <TextInput
                 type="text"
                 placeholder="Tên đăng nhập hoặc số điện thoại"
-                id="text"
+                id="email"
                 onChange={handleChange}
+                disabled={loading}
               />
             </div>
             <div>
@@ -70,6 +104,7 @@ export default function SignIn() {
                 id="password"
                 onChange={handleChange}
                 autoComplete="on"
+                disabled={loading}
               />
             </div>
             <Button
@@ -94,11 +129,6 @@ export default function SignIn() {
               Sign Up
             </Link>
           </div>
-          {errorMessage && (
-            <Alert className="mt-5" color="failure">
-              {errorMessage}
-            </Alert>
-          )}
         </div>
       </div>
     </div>
