@@ -37,7 +37,11 @@ async function login(credentials) {
 		localStorage.setItem("token", response.data.token);
 		return response.data;
 	} catch (error) {
-		throw new Error(error.response?.data || "Login failed");
+		// Properly throw the error message from the server
+		if (error.response && error.response.data) {
+			throw new Error(error.response.data.message || error.response.data);
+		}
+		throw new Error("Network error. Please try again.");
 	}
 }
 

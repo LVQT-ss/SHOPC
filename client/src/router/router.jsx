@@ -13,6 +13,7 @@ import Header from "../components/Header/Header";
 import FooterCom from "../components/Footer/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import ProtectedRoute from "./ProtectedRoute";
+import Checkout from "../pages/Checkout";
 
 const Layout = () => {
   return (
@@ -100,6 +101,10 @@ export const router = createBrowserRouter([
   {
     path: "sign-up",
     element: <SignUp />,
+  },
+  {
+    path: "Checkout",
+    element: <Checkout />,
   },
   {
     path: "*",

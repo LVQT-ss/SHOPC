@@ -34,30 +34,16 @@ export default function SignIn() {
     }
 
     try {
-      dispatch(signInStart()); // Set loading to true
+      dispatch(signInStart());
       const data = await login({
         username: formData.email,
         password: formData.password,
       });
-      dispatch(signInSuccess(data)); // Set loading to false and update user data
+      dispatch(signInSuccess(data));
       navigate("/");
     } catch (error) {
-      // Handle different types of errors
-      if (error.response) {
-        // Server responded with an error
-        dispatch(
-          signInFailure(error.response.data.message || "Invalid credentials")
-        );
-        setError(error.response.data.message || "Invalid credentials");
-      } else if (error.request) {
-        // No response received
-        dispatch(signInFailure("Network error. Please try again."));
-        setError("Network error. Please try again.");
-      } else {
-        // Something else went wrong
-        dispatch(signInFailure("An unexpected error occurred"));
-        setError("An unexpected error occurred. Please try again.");
-      }
+      dispatch(signInFailure(error.message));
+      setError(error.message);
     }
   };
 

@@ -7,6 +7,7 @@ import {
   updateQuantity,
   clearCart,
 } from "../../redux/cart/cartSlice";
+import { Link } from "react-router-dom";
 
 const CartSidebar = () => {
   const dispatch = useDispatch();
@@ -134,7 +135,7 @@ const CartSidebar = () => {
               Clear Cart
             </button>
             <button className="w-full py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-              Checkout
+              <Link to="/Checkout">Check out</Link>
             </button>
           </div>
         </div>
