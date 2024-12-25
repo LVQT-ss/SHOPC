@@ -6,6 +6,7 @@ import {
   HiOutlineUserGroup,
   HiAnnotation,
   HiChartPie,
+  HiCreditCard,
 } from "react-icons/hi";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -100,6 +101,15 @@ export default function DashSidebar() {
                   as="div"
                 >
                   Comments
+                </Sidebar.Item>
+              </Link>
+              <Link to="/dashboard?tab=orders">
+                <Sidebar.Item
+                  active={tab === "orders"}
+                  icon={HiCreditCard}
+                  as="div"
+                >
+                  Orders
                 </Sidebar.Item>
               </Link>
             </>

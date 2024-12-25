@@ -35,10 +35,10 @@ const Order = sequelize.define('Order', {
         type: DataTypes.STRING,
     },
     orderStatus: {
-        type: DataTypes.ENUM('active', 'inactive'),
+        type: DataTypes.ENUM('active', 'inactive', 'complete'), // Restrict to these 3 values
         defaultValue: 'active',
         allowNull: false,
-    }
+    },
 }, {
     tableName: 'orders',
     timestamps: false,
