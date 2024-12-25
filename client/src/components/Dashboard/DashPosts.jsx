@@ -24,41 +24,44 @@ const categories = [
   { categoryId: 12, categoryName: "Vỏ máy tính" },
 ];
 
-const GetAllProducts = () => {
+const DashPosts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productIdToDelete, setProductIdToDelete] = useState("");
+  const [deleteError, setDeleteError] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllProducts();
-        if (data) {
-          setProducts(data);
-          setShowMore(data.length === 9);
-        }
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setLoading(false);
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllProducts();
+      if (data) {
+        setProducts(data);
+        setShowMore(data.length === 9);
       }
-    };
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProducts();
   }, []);
 
   const handleDeleteProduct = async () => {
-    setShowModal(false);
     try {
       await deleteProduct(productIdToDelete);
       setProducts((prev) =>
         prev.filter((product) => product.productId !== productIdToDelete)
       );
+      setShowDeleteModal(false);
+      setDeleteError(null);
     } catch (error) {
-      console.log(error.message);
+      setDeleteError(error.message);
     }
   };
 
@@ -85,10 +88,10 @@ const GetAllProducts = () => {
 
   const handleShowMore = async () => {
     setLoadingMore(true);
-    const numberOfProducts = products.length;
+    const startIndex = products.length;
     try {
       const data = await getAllProducts();
-      const newProducts = data.slice(numberOfProducts, numberOfProducts + 9);
+      const newProducts = data.slice(startIndex, startIndex + 9);
       setProducts((prev) => [...prev, ...newProducts]);
       setShowMore(newProducts.length === 9);
     } catch (error) {
@@ -104,7 +107,7 @@ const GetAllProducts = () => {
     <div className="p-4 md:p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Products</h2>
-        <Link to="/create-post">
+        <Link to="/create-product">
           <Button gradientDuoTone="purpleToPink">Add New Product</Button>
         </Link>
       </div>
@@ -166,15 +169,15 @@ const GetAllProducts = () => {
                   <Table.Cell>
                     <div className="flex gap-2">
                       <Link
-                        to={`/update-product/${product.productId}`}
+                        to={`/update-post/${product.productId}`}
                         className="font-medium text-teal-500 hover:underline"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => {
-                          setShowModal(true);
                           setProductIdToDelete(product.productId);
+                          setShowDeleteModal(true);
                         }}
                         className="font-medium text-red-500 hover:underline"
                       >
@@ -195,14 +198,7 @@ const GetAllProducts = () => {
                 gradientDuoTone="purpleToPink"
                 disabled={loadingMore}
               >
-                {loadingMore ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-gray-300 border-t-teal-500 rounded-full animate-spin"></div>
-                    Loading...
-                  </div>
-                ) : (
-                  "Show More"
-                )}
+                {loadingMore ? "Loading..." : "Show More"}
               </Button>
             </div>
           )}
@@ -214,8 +210,8 @@ const GetAllProducts = () => {
       )}
 
       <Modal
-        show={showModal}
-        onClose={() => setShowModal(false)}
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
         popup
         size="md"
       >
@@ -226,11 +222,16 @@ const GetAllProducts = () => {
             <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
               Are you sure you want to delete this product?
             </h3>
+            {deleteError && (
+              <Alert color="failure" className="mb-4">
+                {deleteError}
+              </Alert>
+            )}
             <div className="flex justify-center gap-4">
               <Button color="failure" onClick={handleDeleteProduct}>
-                Yes, I'm sure
+                Yes, delete it
               </Button>
-              <Button color="gray" onClick={() => setShowModal(false)}>
+              <Button color="gray" onClick={() => setShowDeleteModal(false)}>
                 No, cancel
               </Button>
             </div>
@@ -241,4 +242,4 @@ const GetAllProducts = () => {
   );
 };
 
-export default GetAllProducts;
+export default DashPosts;

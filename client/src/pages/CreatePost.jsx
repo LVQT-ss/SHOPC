@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, TextInput, Select, FileInput, Alert } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   getStorage,
   ref,
@@ -140,10 +141,28 @@ const CreateProduct = () => {
 
     try {
       await createProduct(formData);
-      navigate("/products");
+      toast.success("Product created successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/dashboard?tab=posts");
       setPublishError(null);
     } catch (error) {
       setPublishError(error.message || "Something went wrong");
+      toast.error(error.message || "Failed to create product", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       console.error(error);
     }
   };
