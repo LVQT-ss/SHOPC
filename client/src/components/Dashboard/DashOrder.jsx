@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button } from "flowbite-react";
 import { getAllOrders } from "../../Utils/ApiFunctions";
 import { HiSortAscending, HiSortDescending } from "react-icons/hi";
+import OrderDetails from "../Billing/orderDetails";
 
 const TableSkeleton = () => (
   <div className="animate-pulse">
@@ -29,7 +30,8 @@ const DashOrder = () => {
     direction: "asc",
   });
   const [statusFilter, setStatusFilter] = useState("all");
-
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -152,6 +154,7 @@ const DashOrder = () => {
             <Table.HeadCell>Total</Table.HeadCell>
             <Table.HeadCell>Date</Table.HeadCell>
             <Table.HeadCell>Status</Table.HeadCell>
+            <Table.HeadCell>details of order</Table.HeadCell>
           </Table.Head>
           <Table.Body>
             {loading ? (
@@ -204,6 +207,18 @@ const DashOrder = () => {
                       {order.orderStatus}
                     </span>
                   </Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      size="sm"
+                      gradientDuoTone="purpleToBlue"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setShowDetails(true);
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </Table.Cell>
                 </Table.Row>
               ))
             ) : (
@@ -216,6 +231,15 @@ const DashOrder = () => {
           </Table.Body>
         </Table>
       </div>
+      {showDetails && (
+        <OrderDetails
+          order={selectedOrder}
+          onClose={() => {
+            setShowDetails(false);
+            setSelectedOrder(null);
+          }}
+        />
+      )}
     </div>
   );
 };
