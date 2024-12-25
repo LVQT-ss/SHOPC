@@ -6,8 +6,8 @@ import {
   getAllProducts,
   deleteProduct,
   updateProductActiveStatus,
-} from "../../Utils/ApiFunctions";
-import LoadingSpinner from "../Loading/loadingSpinner";
+} from "../Utils/ApiFunctions";
+import LoadingSpinner from "../components/Loading/loadingSpinner";
 
 const categories = [
   { categoryId: 1, categoryName: "Combo Pc" },
@@ -104,7 +104,7 @@ const GetAllProducts = () => {
     <div className="p-4 md:p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Products</h2>
-        <Link to="/create-post">
+        <Link to="/add-product">
           <Button gradientDuoTone="purpleToPink">Add New Product</Button>
         </Link>
       </div>

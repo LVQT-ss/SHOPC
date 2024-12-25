@@ -14,6 +14,7 @@ import FooterCom from "../components/Footer/Footer";
 import ScrollToTop from "../components/ScrollToTop";
 import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
+import GetAllProducts from "../pages/GetAllproduct";
 
 const Layout = () => {
   return (
@@ -105,6 +106,10 @@ export const router = createBrowserRouter([
   {
     path: "Checkout",
     element: <Checkout />,
+  },
+  {
+    path: "getallproduct",
+    element: <GetAllProducts />,
   },
   {
     path: "*",
