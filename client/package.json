@@ -11,6 +11,8 @@
     "serve": "vite preview --port 6000"
   },
   "dependencies": {
+    "@ag-media/react-pdf-table": "^2.0.0",
+    "@react-pdf/font": "^3.0.1",
     "@react-pdf/renderer": "^4.1.5",
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.7.9",

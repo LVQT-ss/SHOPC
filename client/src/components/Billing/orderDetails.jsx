@@ -7,65 +7,142 @@ import {
   Text,
   View,
   StyleSheet,
+  PDFViewer,
+  Font,
 } from "@react-pdf/renderer";
+import { Table, TD, TH, TR } from "@ag-media/react-pdf-table";
+
+// Register font for Vietnamese support
+Font.register({
+  family: "Roboto",
+  fonts: [
+    {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf",
+      fontWeight: "normal",
+    },
+    {
+      src: "https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf",
+      fontWeight: "bold",
+    },
+  ],
+});
 
 const styles = StyleSheet.create({
-  page: { padding: 30 },
-  title: { fontSize: 20, marginBottom: 20, textAlign: "center" },
-  header: { fontSize: 14, marginBottom: 20 },
+  page: {
+    padding: 30,
+    fontFamily: "Roboto",
+  },
+  title: {
+    fontSize: 20,
+    marginBottom: 20,
+    textAlign: "center",
+    fontFamily: "Roboto",
+    fontWeight: "bold",
+  },
+  header: {
+    fontSize: 14,
+    marginBottom: 20,
+    fontFamily: "Roboto",
+  },
   section: { marginBottom: 10 },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 5,
   },
-  bold: { fontWeight: "bold" },
+  bold: {
+    fontWeight: "bold",
+    fontFamily: "Roboto",
+  },
+  text: {
+    fontFamily: "Roboto",
+    fontSize: 10, // Kích thước chữ header lớn hơn
+  },
   item: { marginBottom: 10, padding: 10, backgroundColor: "#f3f4f6" },
   total: { marginTop: 20, borderTopWidth: 1, paddingTop: 10 },
+
+  tdLeft: {
+    display: "flex",
+    padding: 8,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+    textAlign: "left",
+    fontSize: 14,
+    justifyContent: "center",
+    wordBreak: "break-word", // Tự động xuống dòng khi nội dung quá dài
+    flexWrap: "wrap", // Đảm bảo nội dung nằm trong ô
+  },
+  td: {
+    display: "flex",
+    padding: 8,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+    textAlign: "center",
+    fontSize: 14,
+    justifyContent: "center",
+    flexWrap: "wrap", // Đảm bảo xuống dòng nếu cần
+  },
 });
 
 const OrderPDF = ({ order }) => (
   <Document>
     <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Order Invoice</Text>
+      <Text style={styles.title}>Hóa Đơn Bán Hàng</Text>
 
       <View style={styles.header}>
-        <Text>Order Number: {order.orderNumber}</Text>
-        <Text>Date: {new Date(order.orderDate).toLocaleDateString()}</Text>
-        <Text>Status: {order.orderStatus}</Text>
+        <Text style={styles.text}>Mã đơn hàng: {order.orderNumber}</Text>
+        <Text style={styles.text}>
+          Ngày: {new Date(order.orderDate).toLocaleDateString("vi-VN")}
+        </Text>
+        <Text style={styles.text}>Trạng thái: {order.orderStatus}</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.bold}>Customer Information</Text>
-        <Text>Name: {order.user.username}</Text>
-        <Text>Email: {order.user.email}</Text>
-        {order.guestAddress && <Text>Address: {order.guestAddress}</Text>}
-        {order.guestPhoneNum && <Text>Phone: {order.guestPhoneNum}</Text>}
+        <Text style={[styles.bold, styles.text]}>Thông tin khách hàng</Text>
+        <Text style={styles.text}>Tên: {order.user.username}</Text>
+
+        <Text style={styles.text}>Địa chỉ: {order.guestAddress}</Text>
+
+        <Text style={styles.text}>Số điện thoại: {order.guestPhoneNum}</Text>
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.bold}>Order Items</Text>
+      {/* TABLE  */}
+      <Table style={styles.table}>
+        <TR style={styles.tableHeader}>
+          <TD style={[styles.tdLeft, styles.bold, { flex: 4 }]}>Sản Phẩm</TD>
+          <TD style={[styles.td, styles.bold, { flex: 1 }]}>Số Lượng</TD>
+          <TD style={[styles.td, styles.bold, { flex: 2 }]}>Đơn Giá</TD>
+          <TD style={[styles.td, styles.bold, { flex: 2 }]}>Tổng tiền</TD>
+          <TD style={[styles.td, styles.bold, { flex: 1 }]}>Bảo hành</TD>
+        </TR>
         {order.orderDetails.map((item) => (
-          <View key={item.orderDetailsId} style={styles.item}>
-            <Text>{item.product.productName}</Text>
-            <View style={styles.row}>
-              <Text>
-                Price: ${parseFloat(item.price).toLocaleString()} ×{" "}
-                {item.quantity}
-              </Text>
-              <Text>
-                ${(parseFloat(item.price) * item.quantity).toLocaleString()}
-              </Text>
-            </View>
-          </View>
+          <TR key={item.orderDetailsId}>
+            <TD style={[styles.tdLeft, styles.text, { flex: 4 }]}>
+              {item.product.productName}
+            </TD>
+            <TD style={[styles.td, styles.text, { flex: 1 }]}>
+              {item.quantity}
+            </TD>
+            <TD style={[styles.td, styles.text, { flex: 2 }]}>
+              {parseFloat(item.price).toLocaleString("vi-VN")} đ
+            </TD>
+            <TD style={[styles.td, styles.text, { flex: 2 }]}>
+              {(parseFloat(item.price) * item.quantity).toLocaleString("vi-VN")}{" "}
+              đ
+            </TD>
+            <TD style={[styles.td, styles.text, { flex: 1 }]}>12 tháng</TD>
+          </TR>
         ))}
-      </View>
+      </Table>
 
       <View style={styles.total}>
         <View style={styles.row}>
-          <Text style={styles.bold}>Total Amount</Text>
-          <Text style={styles.bold}>
-            ${parseFloat(order.orderTotal).toLocaleString()}
+          <Text style={[styles.bold, styles.text]}>
+            Tổng tiền cần thanh toán
+          </Text>
+
+          <Text style={[styles.bold, styles.text]}>
+            {parseFloat(order.orderTotal).toLocaleString("vi-VN")} vnđ
           </Text>
         </View>
       </View>
@@ -78,21 +155,20 @@ const OrderDetails = ({ order, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Order Details</h2>
+          <h2 className="text-2xl font-bold">Chi tiết đơn hàng</h2>
           <Button color="gray" size="sm" onClick={onClose}>
-            Close
+            Đóng
           </Button>
         </div>
 
         <div className="space-y-6">
-          {/* Previous OrderDetails content remains the same */}
           <div className="flex justify-between items-start">
             <div>
               <p className="text-lg font-semibold">{order.orderNumber}</p>
               <p className="text-gray-500">
-                {new Date(order.orderDate).toLocaleDateString()}
+                {new Date(order.orderDate).toLocaleDateString("vi-VN")}
               </p>
             </div>
             <Badge
@@ -109,15 +185,15 @@ const OrderDetails = ({ order, onClose }) => {
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-semibold mb-2">Customer Information</h3>
-            <p>Name: {order.user.username}</p>
+            <h3 className="font-semibold mb-2">Thông tin khách hàng</h3>
+            <p>Tên: {order.user.username}</p>
             <p>Email: {order.user.email}</p>
-            {order.guestAddress && <p>Address: {order.guestAddress}</p>}
-            {order.guestPhoneNum && <p>Phone: {order.guestPhoneNum}</p>}
+            {order.guestAddress && <p>Địa chỉ: {order.guestAddress}</p>}
+            {order.guestPhoneNum && <p>Số điện thoại: {order.guestPhoneNum}</p>}
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-semibold mb-2">Order Items</h3>
+            <h3 className="font-semibold mb-2">Sản phẩm đặt hàng</h3>
             <div className="space-y-4">
               {order.orderDetails.map((item) => (
                 <div
@@ -133,13 +209,16 @@ const OrderDetails = ({ order, onClose }) => {
                     <div>
                       <p className="font-medium">{item.product.productName}</p>
                       <p className="text-sm text-gray-500">
-                        Price: ${parseFloat(item.price).toLocaleString()} ×{" "}
-                        {item.quantity}
+                        Giá: {parseFloat(item.price).toLocaleString("vi-VN")} đ
+                        × {item.quantity}
                       </p>
                     </div>
                   </div>
                   <p className="font-semibold">
-                    ${(parseFloat(item.price) * item.quantity).toLocaleString()}
+                    {(parseFloat(item.price) * item.quantity).toLocaleString(
+                      "vi-VN"
+                    )}{" "}
+                    đ
                   </p>
                 </div>
               ))}
@@ -147,12 +226,22 @@ const OrderDetails = ({ order, onClose }) => {
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-semibold mb-2">Order Summary</h3>
+            <h3 className="font-semibold mb-2">Tổng đơn hàng</h3>
             <div className="flex justify-between">
-              <span>Total</span>
+              <span>Tổng cộng</span>
               <span className="font-bold">
-                ${parseFloat(order.orderTotal).toLocaleString()}
+                {parseFloat(order.orderTotal).toLocaleString("vi-VN")} đ
               </span>
+            </div>
+          </div>
+
+          {/* PDF Preview */}
+          <div className="border-t pt-4">
+            <h3 className="font-semibold mb-2">Xem trước PDF</h3>
+            <div className="w-full h-[500px]">
+              <PDFViewer width="100%" height="100%">
+                <OrderPDF order={order} />
+              </PDFViewer>
             </div>
           </div>
 
@@ -164,7 +253,7 @@ const OrderDetails = ({ order, onClose }) => {
             >
               {({ loading }) => (
                 <Button gradientDuoTone="purpleToBlue" disabled={loading}>
-                  {loading ? "Generating PDF..." : "Print Bill"}
+                  {loading ? "Đang tạo PDF..." : "In hóa đơn"}
                 </Button>
               )}
             </PDFDownloadLink>
