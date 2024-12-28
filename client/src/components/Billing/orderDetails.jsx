@@ -9,9 +9,10 @@ import {
   StyleSheet,
   PDFViewer,
   Font,
+  Image,
 } from "@react-pdf/renderer";
 import { Table, TD, TH, TR } from "@ag-media/react-pdf-table";
-
+import logo from "../../assets/logo.jpg";
 // Register font for Vietnamese support
 Font.register({
   family: "Roboto",
@@ -82,11 +83,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap", // Đảm bảo xuống dòng nếu cần
   },
+  logo: {
+    width: 150,
+    height: 50,
+    objectFit: "contain",
+  },
 });
 
 const OrderPDF = ({ order }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+      <View style={styles.logoContainer}>
+        <Image
+          style={styles.logo}
+          src={logo} // Update this path
+        />
+      </View>
+
       <Text style={styles.title}>Hóa Đơn Bán Hàng</Text>
 
       <View style={styles.header}>
@@ -94,7 +107,7 @@ const OrderPDF = ({ order }) => (
         <Text style={styles.text}>
           Ngày: {new Date(order.orderDate).toLocaleDateString("vi-VN")}
         </Text>
-        <Text style={styles.text}>Trạng thái: {order.orderStatus}</Text>
+        <Text style={styles.text}>Người bán:</Text>
       </View>
 
       <View style={styles.section}>
@@ -109,18 +122,20 @@ const OrderPDF = ({ order }) => (
       {/* TABLE  */}
       <Table style={styles.table}>
         <TR style={styles.tableHeader}>
+          <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>STT</TD>
           <TD style={[styles.tdLeft, styles.bold, { flex: 4 }]}>Sản Phẩm</TD>
-          <TD style={[styles.td, styles.bold, { flex: 1 }]}>Số Lượng</TD>
+          <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>SL</TD>
           <TD style={[styles.td, styles.bold, { flex: 2 }]}>Đơn Giá</TD>
           <TD style={[styles.td, styles.bold, { flex: 2 }]}>Tổng tiền</TD>
           <TD style={[styles.td, styles.bold, { flex: 1 }]}>Bảo hành</TD>
         </TR>
         {order.orderDetails.map((item) => (
           <TR key={item.orderDetailsId}>
+            <TD style={[styles.td, styles.text, { flex: 0.5 }]}>1</TD>
             <TD style={[styles.tdLeft, styles.text, { flex: 4 }]}>
               {item.product.productName}
             </TD>
-            <TD style={[styles.td, styles.text, { flex: 1 }]}>
+            <TD style={[styles.td, styles.text, { flex: 0.5 }]}>
               {item.quantity}
             </TD>
             <TD style={[styles.td, styles.text, { flex: 2 }]}>
