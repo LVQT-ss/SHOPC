@@ -13,7 +13,7 @@ import {
 } from "@react-pdf/renderer";
 import { Table, TD, TH, TR } from "@ag-media/react-pdf-table";
 import logo from "../../assets/logo.jpg";
-// Register font for Vietnamese support
+
 Font.register({
   family: "Roboto",
   fonts: [
@@ -57,11 +57,16 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "Roboto",
-    fontSize: 10, // Kích thước chữ header lớn hơn
+    fontSize: 10,
   },
   item: { marginBottom: 10, padding: 10, backgroundColor: "#f3f4f6" },
   total: { marginTop: 20, borderTopWidth: 1, paddingTop: 10 },
-
+  warranty: {
+    marginTop: 20,
+    fontSize: 10,
+    color: "#4B5563",
+    fontFamily: "Roboto",
+  },
   tdLeft: {
     display: "flex",
     padding: 8,
@@ -70,8 +75,8 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontSize: 14,
     justifyContent: "center",
-    wordBreak: "break-word", // Tự động xuống dòng khi nội dung quá dài
-    flexWrap: "wrap", // Đảm bảo nội dung nằm trong ô
+    wordBreak: "break-word",
+    flexWrap: "wrap",
   },
   td: {
     display: "flex",
@@ -81,12 +86,31 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 14,
     justifyContent: "center",
-    flexWrap: "wrap", // Đảm bảo xuống dòng nếu cần
+    flexWrap: "wrap",
   },
   logo: {
     width: 150,
     height: 50,
     objectFit: "contain",
+  },
+  signature: {
+    marginTop: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  signatureBox: {
+    width: 200,
+  },
+  signatureLine: {
+    borderTopWidth: 1,
+    borderColor: "#000",
+    marginTop: 40,
+    marginBottom: 5,
+  },
+  signatureLabel: {
+    fontSize: 10,
+    textAlign: "center",
+    fontFamily: "Roboto",
   },
 });
 
@@ -94,10 +118,7 @@ const OrderPDF = ({ order }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.logoContainer}>
-        <Image
-          style={styles.logo}
-          src={logo} // Update this path
-        />
+        <Image style={styles.logo} src={logo} />
       </View>
 
       <Text style={styles.title}>Hóa Đơn Bán Hàng</Text>
@@ -113,13 +134,10 @@ const OrderPDF = ({ order }) => (
       <View style={styles.section}>
         <Text style={[styles.bold, styles.text]}>Thông tin khách hàng</Text>
         <Text style={styles.text}>Tên: {order.user.username}</Text>
-
         <Text style={styles.text}>Địa chỉ: {order.guestAddress}</Text>
-
         <Text style={styles.text}>Số điện thoại: {order.guestPhoneNum}</Text>
       </View>
 
-      {/* TABLE  */}
       <Table style={styles.table}>
         <TR style={styles.tableHeader}>
           <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>STT</TD>
@@ -155,9 +173,31 @@ const OrderPDF = ({ order }) => (
           <Text style={[styles.bold, styles.text]}>
             Tổng tiền cần thanh toán
           </Text>
-
           <Text style={[styles.bold, styles.text]}>
             {parseFloat(order.orderTotal).toLocaleString("vi-VN")} vnđ
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.warranty}>
+        <Text>
+          * Các trường hợp bảo hành vui lòng xem tại: anhempcpro.store/about
+        </Text>
+      </View>
+      <View style={styles.signature}>
+        <View style={styles.signatureBox}>
+          <View style={styles.signatureLine} />
+          <Text style={styles.signatureLabel}>Người nhận hàng</Text>
+          <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
+            (Ký và ghi rõ họ tên)
+          </Text>
+        </View>
+
+        <View style={styles.signatureBox}>
+          <View style={styles.signatureLine} />
+          <Text style={styles.signatureLabel}>Người giao hàng</Text>
+          <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
+            (Ký và ghi rõ họ tên)
           </Text>
         </View>
       </View>
@@ -250,7 +290,6 @@ const OrderDetails = ({ order, onClose }) => {
             </div>
           </div>
 
-          {/* PDF Preview */}
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-2">Xem trước PDF</h3>
             <div className="w-full h-[500px]">
@@ -260,7 +299,6 @@ const OrderDetails = ({ order, onClose }) => {
             </div>
           </div>
 
-          {/* PDF Download Button */}
           <div className="border-t pt-4 flex justify-center">
             <PDFDownloadLink
               document={<OrderPDF order={order} />}
