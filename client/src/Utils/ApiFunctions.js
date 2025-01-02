@@ -295,6 +295,74 @@ async function deleteUserAccount(userId) {
 	}
 }
 
+
+async function getAllUsers() {
+	try {
+		const response = await api.get("/user/getalluser", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching all users");
+	}
+}
+
+async function getAllStaff() {
+	try {
+		const response = await api.get("/user/getallstaff", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching staff users");
+	}
+}
+
+async function getAllCustomers() {
+	try {
+		const response = await api.get("/user/getallcustomer", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching customer users");
+	}
+}
+
+async function getUserById(userId) {
+	try {
+		const response = await api.get(`/user/${userId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error fetching user: ${error.message}`);
+	}
+}
+
+async function updateUser(userId, userData) {
+	try {
+		const response = await api.put(`/user/update/${userId}`, userData, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Error updating user");
+	}
+}
+
+async function deleteUser(userId) {
+	try {
+		const response = await api.delete(`/user/delete/${userId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Error deleting user");
+	}
+}
+
+
 export {
 	// Auth exports
 	register,
@@ -305,7 +373,13 @@ export {
 	updateUserProfile,
 	updateProfilePicture,
 	deleteUserAccount,
-
+	//user exports 
+	getAllUsers,
+	getAllStaff,
+	getAllCustomers,
+	getUserById,
+	updateUser,
+	deleteUser,
 	// Order exports
 	createOrder,
 	getAllOrders,

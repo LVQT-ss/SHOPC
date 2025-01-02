@@ -2,7 +2,7 @@ import { Button, Modal, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { getAllUsers, deleteUser } from "../../Utils/ApiFunctions";
 
 export default function DashUsers() {
   const { currentUser } = useSelector((state) => state.user);
@@ -10,15 +10,15 @@ export default function DashUsers() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`/api/user/getusers`);
-        const data = await res.json();
-        if (res.ok) {
-          setUsers(data.users);
-          if (data.users.length < 9) {
+        const data = await getAllUsers();
+        if (data) {
+          setUsers(data);
+          if (data.length < 9) {
             setShowMore(false);
           }
         }
@@ -31,14 +31,24 @@ export default function DashUsers() {
     }
   }, [currentUser]);
 
+  const handleSort = () => {
+    const sortedUsers = [...users].sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.userId.localeCompare(b.userId, undefined, { numeric: true });
+      }
+      return b.userId.localeCompare(a.userId, undefined, { numeric: true });
+    });
+    setUsers(sortedUsers);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
   const handleShowMore = async () => {
     const startIndex = users.length;
     try {
-      const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
-      const data = await res.json();
-      if (res.ok) {
-        setUsers((prev) => [...prev, ...data.users]);
-        if (data.users.length < 9) {
+      const data = await getAllUsers();
+      if (data) {
+        setUsers((prev) => [...prev, ...data]);
+        if (data.length < 9) {
           setShowMore(false);
         }
       }
@@ -49,15 +59,10 @@ export default function DashUsers() {
 
   const handleDeleteUser = async () => {
     try {
-      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (res.ok) {
+      const data = await deleteUser(userIdToDelete);
+      if (data) {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
-      } else {
-        console.log(data.message);
       }
     } catch (error) {
       console.log(error.message);
@@ -70,40 +75,45 @@ export default function DashUsers() {
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
-              <Table.HeadCell>Date created</Table.HeadCell>
-              <Table.HeadCell>User image</Table.HeadCell>
+              <Table.HeadCell onClick={handleSort} className="cursor-pointer">
+                User ID {sortOrder === "asc" ? "↑" : "↓"}
+              </Table.HeadCell>
               <Table.HeadCell>Username</Table.HeadCell>
               <Table.HeadCell>Email</Table.HeadCell>
-              <Table.HeadCell>Admin</Table.HeadCell>
-              <Table.HeadCell>Delete</Table.HeadCell>
+              <Table.HeadCell>Phone</Table.HeadCell>
+              <Table.HeadCell>Address</Table.HeadCell>
+              <Table.HeadCell>User Type</Table.HeadCell>
+              <Table.HeadCell>Actions</Table.HeadCell>
             </Table.Head>
             {users.map((user) => (
               <Table.Body className="divide-y" key={user._id}>
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                  <Table.Cell>{user.userId}</Table.Cell>
                   <Table.Cell>
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    <div className="flex items-center gap-3">
+                      {user.image ? (
+                        <img
+                          src={user.image}
+                          alt={user.username}
+                          className="w-10 h-10 object-cover rounded-full"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                          {user.username[0].toUpperCase()}
+                        </div>
+                      )}
+                      {user.username}
+                    </div>
                   </Table.Cell>
-                  <Table.Cell>
-                    <img
-                      src={user.profilePicture}
-                      alt={user.username}
-                      className="w-10 h-10 object-cover bg-gray-500 rounded-full"
-                    />
-                  </Table.Cell>
-                  <Table.Cell>{user.username}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
-                  <Table.Cell>
-                    {user.usertype === "Admin" ? (
-                      <FaCheck className="text-green-500" />
-                    ) : (
-                      <FaTimes className="text-red-500" />
-                    )}
-                  </Table.Cell>
+                  <Table.Cell>{user.userPhoneNumber}</Table.Cell>
+                  <Table.Cell>{user.userAddress}</Table.Cell>
+                  <Table.Cell>{user.usertype}</Table.Cell>
                   <Table.Cell>
                     <span
                       onClick={() => {
                         setShowModal(true);
-                        setUserIdToDelete(user._id);
+                        setUserIdToDelete(user.userId);
                       }}
                       className="font-medium text-red-500 hover:underline cursor-pointer"
                     >
