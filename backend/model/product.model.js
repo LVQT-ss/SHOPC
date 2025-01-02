@@ -28,6 +28,10 @@ const Product = sequelize.define('Product', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    warranty: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 }, {
     tableName: 'products', // More conventional naming
     timestamps: false,

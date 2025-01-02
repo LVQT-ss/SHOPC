@@ -3,7 +3,7 @@ import User from "../model/user.model.js";
 
 // create new product
 export const createProduct = async (req, res) => {
-    const { categoryId, productName, productDescription, productPrice, image } = req.body;
+    const { categoryId, productName, productDescription, productPrice, image, warranty } = req.body;
 
     // Validate required fields
     if (!categoryId || !productName || !productDescription || productPrice === undefined) {
@@ -17,6 +17,7 @@ export const createProduct = async (req, res) => {
             productDescription,
             productPrice,
             image, // Include image if provided
+            warranty
         });
         res.status(201).json(newProduct);
     } catch (err) {
@@ -86,6 +87,7 @@ export const updateProduct = async (req, res) => {
             productPrice: productPrice !== undefined ? productPrice : product.productPrice,
             isActive: isActive !== undefined ? isActive : product.isActive,
             image: image !== undefined ? image : product.image,
+
         });
 
         res.status(200).json({ message: 'Product updated successfully', product });

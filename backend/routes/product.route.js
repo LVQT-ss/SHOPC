@@ -48,6 +48,9 @@ const router = express.Router();
  *               image:   # New image field
  *                 type: string
  *                 example: "https://example.com/image.png"
+ *               warranty:
+ *                 type: integer
+ *                 example: 12
  *               isActive:
  *                 type: string
  *                 enum: [ "active", "inActive", "waiting" ]  # Updated enum values
