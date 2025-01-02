@@ -63,17 +63,17 @@ export const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userType: user.usertype, email: user.email, image: user.image, address: user.userAddress, phone: user.userPhoneNumber },
+      { usertype: user.usertype, email: user.email, image: user.image, address: user.userAddress, phone: user.userPhoneNumber },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    // const { password: pass, ...userWithoutPassword } = user.dataValues;
+    const { password: pass, ...userWithoutPassword } = user.dataValues;
 
     res.status(200).json({
       message: "Login successful",
       token: token,
-      // user: userWithoutPassword,
+      user: userWithoutPassword,
     });
 
   } catch (err) {
