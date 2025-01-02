@@ -104,7 +104,7 @@ const DashPosts = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="p-4 md:p-6">
+    <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">All Products</h2>
         <Link to="/create-post">
