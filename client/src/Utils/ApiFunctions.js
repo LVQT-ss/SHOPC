@@ -257,6 +257,44 @@ async function deleteProduct(productId) {
 	}
 }
 
+
+// Update user profile
+async function updateUserProfile(userId, userData) {
+	try {
+		const response = await api.put(`/user/update/${userId}`, userData, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Error updating profile");
+	}
+}
+
+// Update user profile picture
+async function updateProfilePicture(userId, imageUrl) {
+	try {
+		const response = await api.patch(`/user/update-picture/${userId}`,
+			{ profilePicture: imageUrl },
+			{ headers: getHeader() }
+		);
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Error updating profile picture");
+	}
+}
+
+// Delete user account
+async function deleteUserAccount(userId) {
+	try {
+		const response = await api.delete(`/user/delete/${userId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data?.message || "Error deleting account");
+	}
+}
+
 export {
 	// Auth exports
 	register,
@@ -264,6 +302,9 @@ export {
 	requestPasswordReset,
 	resetPassword,
 	signout,
+	updateUserProfile,
+	updateProfilePicture,
+	deleteUserAccount,
 
 	// Order exports
 	createOrder,
