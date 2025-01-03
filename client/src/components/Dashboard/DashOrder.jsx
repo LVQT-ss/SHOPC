@@ -32,6 +32,7 @@ const DashOrder = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -150,6 +151,7 @@ const DashOrder = () => {
           <Table.Head>
             <Table.HeadCell>Order Number</Table.HeadCell>
             <Table.HeadCell>Customer</Table.HeadCell>
+            <Table.HeadCell>Email</Table.HeadCell>
             <Table.HeadCell>Products</Table.HeadCell>
             <Table.HeadCell>Total</Table.HeadCell>
             <Table.HeadCell>Date</Table.HeadCell>
@@ -169,11 +171,11 @@ const DashOrder = () => {
                     {order.orderNumber}
                   </Table.Cell>
                   <Table.Cell>
-                    {order.user.username}
-                    <br />
-                    <span className="text-sm text-gray-500">
-                      {order.user.email}
-                    </span>
+                    {order.guestName || order.user?.username}
+                  </Table.Cell>
+
+                  <Table.Cell className="text-sm text-gray-500">
+                    {order.guestEmail || order.user?.email}
                   </Table.Cell>
                   <Table.Cell>
                     {order.orderDetails.map((detail) => (

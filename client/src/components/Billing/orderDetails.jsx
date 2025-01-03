@@ -133,7 +133,12 @@ const OrderPDF = ({ order }) => (
 
       <View style={styles.section}>
         <Text style={[styles.bold, styles.text]}>Thông tin khách hàng</Text>
-        <Text style={styles.text}>Tên: {order.user.username}</Text>
+        <Text style={styles.text}>
+          Tên: {order.guestName || order.user?.username}
+        </Text>
+        <Text style={styles.text}>
+          Email: {order.guestEmail || order.user?.email}
+        </Text>
         <Text style={styles.text}>Địa chỉ: {order.guestAddress}</Text>
         <Text style={styles.text}>Số điện thoại: {order.guestPhoneNum}</Text>
       </View>
@@ -241,12 +246,12 @@ const OrderDetails = ({ order, onClose }) => {
 
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-2">Thông tin khách hàng</h3>
-            <p>Tên: {order.user.username}</p>
-            <p>Email: {order.user.email}</p>
-            {order.guestAddress && <p>Địa chỉ: {order.guestAddress}</p>}
-            {order.guestPhoneNum && <p>Số điện thoại: {order.guestPhoneNum}</p>}
+            <p>Tên: {order.guestName || order.user?.username}</p>
+            <p>Email: {order.guestEmail || order.user?.email}</p>
+            <p>Địa chỉ: {order.guestAddress}</p>
+            <p>Số điện thoại: {order.guestPhoneNum}</p>
+            <p>Phương thức thanh toán: {order.payment}</p>
           </div>
-
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-2">Sản phẩm đặt hàng</h3>
             <div className="space-y-4">
