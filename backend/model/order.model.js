@@ -34,6 +34,16 @@ const Order = sequelize.define('Order', {
     guestPhoneNum: {
         type: DataTypes.STRING,
     },
+    guestName: {
+        type: DataTypes.STRING,
+    },
+    guestEmail: {
+        type: DataTypes.STRING,
+    },
+    payment: {
+        type: DataTypes.STRING,
+    },
+
     orderStatus: {
         type: DataTypes.ENUM('active', 'inactive', 'complete'), // Restrict to these 3 values
         defaultValue: 'active',

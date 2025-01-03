@@ -8,7 +8,7 @@ export const createOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const { userId, totalAmount, orderStatus, orderItems } = req.body;
+        const { userId, guestName, guestAddress, guestPhoneNum, guestEmail, payment, totalAmount, orderStatus, orderItems } = req.body;
 
         // Validate input
         if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
@@ -52,8 +52,9 @@ export const createOrder = async (req, res) => {
         // Create order with formatted date
         const order = await Order.create({
             userId,
+            guestName, guestAddress, guestPhoneNum, guestEmail, payment,
             orderNumber,
-            orderDate: '2024-12-18', // Hardcoded date as requested
+            orderDate: Date.now(), // Hardcoded date as requested
             orderTotal: totalAmount,
             orderStatus: orderStatus || 'active'
         }, { transaction });

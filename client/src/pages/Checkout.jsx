@@ -45,7 +45,7 @@ const Checkout = () => {
 
     try {
       const orderData = {
-        userId: 0, // For guest order
+        userId: 1, // For guest order
         totalAmount,
         orderStatus: "active",
         guestAddress: formData.address,

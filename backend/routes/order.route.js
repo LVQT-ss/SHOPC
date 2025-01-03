@@ -21,11 +21,31 @@ const router = express.Router();
  *             type: object
  *             required:
  *               - userId
+ *               - guestName
+ *               - guestAddress
+ *               - guestPhoneNum
+ *               - guestEmail
+ *               - payment
  *               - totalAmount
  *               - orderStatus
  *               - orderItems
  *             properties:
  *               userId:
+ *                 type: integer
+ *                 example: 1
+ *               guestName:
+ *                 type: integer
+ *                 example: 1
+ *               guestAddress:
+ *                 type: integer
+ *                 example: 1
+ *               guestPhoneNum:
+ *                 type: integer
+ *                 example: 1
+ *               guestEmail:
+ *                 type: integer
+ *                 example: 1
+ *               payment:
  *                 type: integer
  *                 example: 1
  *               totalAmount:
@@ -47,10 +67,6 @@ const router = express.Router();
  *                     quantity:
  *                       type: integer
  *                       example: 2
- *                     price:
- *                       type: number
- *                       format: float
- *                       example: 49.99
  *     responses:
  *       201:
  *         description: Order created successfully

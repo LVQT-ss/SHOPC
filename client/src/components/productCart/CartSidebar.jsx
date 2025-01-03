@@ -72,7 +72,7 @@ const CartSidebar = () => {
 
     try {
       const orderData = {
-        userId: 0,
+        userId: 1,
         totalAmount: totalPrice,
         orderStatus: "active",
         guestAddress: formData.address,
