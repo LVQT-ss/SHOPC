@@ -8,7 +8,6 @@ import {
   clearCart,
 } from "../../redux/cart/cartSlice";
 import { createOrder } from "../../Utils/ApiFunctions";
-import { Alert } from "flowbite-react";
 
 const CartSidebar = () => {
   const dispatch = useDispatch();
@@ -19,8 +18,11 @@ const CartSidebar = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
-    address: "",
-    phoneNumber: "",
+    guestName: "",
+    guestEmail: "",
+    guestAddress: "",
+    guestPhoneNum: "",
+    payment: "",
   });
 
   const totalPrice = items.reduce(
@@ -72,11 +74,14 @@ const CartSidebar = () => {
 
     try {
       const orderData = {
-        userId: 1,
+        userId: 1, // Replace with actual user ID if available
+        guestName: formData.guestName,
+        guestEmail: formData.guestEmail,
+        guestAddress: formData.guestAddress,
+        guestPhoneNum: formData.guestPhoneNum,
+        payment: formData.payment,
         totalAmount: totalPrice,
         orderStatus: "active",
-        guestAddress: formData.address,
-        guestPhoneNum: formData.phoneNumber,
         orderItems: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -88,7 +93,6 @@ const CartSidebar = () => {
       setSuccess(true);
       dispatch(clearCart());
 
-      // Reset checkout state after 2 seconds
       setTimeout(() => {
         setSuccess(false);
         setIsCheckingOut(false);
@@ -106,9 +110,9 @@ const CartSidebar = () => {
   const renderFooter = () => {
     if (success) {
       return (
-        <Alert className="bg-green-50 text-green-800 border-green-200">
-          <Alert>Order placed successfully! Thank you for your purchase.</Alert>
-        </Alert>
+        <div className="p-4 bg-green-50 text-green-800 border border-green-200 rounded">
+          Order placed successfully! Thank you for your purchase.
+        </div>
       );
     }
 
@@ -116,22 +120,51 @@ const CartSidebar = () => {
       return (
         <form onSubmit={handleSubmitOrder} className="space-y-4">
           {error && (
-            <Alert variant="destructive">
-              <Alert>{error}</Alert>
-            </Alert>
+            <div className="p-4 bg-red-50 text-red-800 border border-red-200 rounded">
+              {error}
+            </div>
           )}
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Full Name</label>
+            <input
+              type="text"
+              name="guestName"
+              value={formData.guestName}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded-md text-sm"
+              placeholder="John Doe"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="guestEmail"
+              value={formData.guestEmail}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded-md text-sm"
+              placeholder="john@example.com"
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">
               Delivery Address
             </label>
             <textarea
-              name="address"
-              value={formData.address}
+              name="guestAddress"
+              value={formData.guestAddress}
               onChange={handleInputChange}
               required
               className="w-full p-2 border rounded-md text-sm"
               rows="2"
+              placeholder="123 Main St, City, Country"
             />
           </div>
 
@@ -141,12 +174,30 @@ const CartSidebar = () => {
             </label>
             <input
               type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
+              name="guestPhoneNum"
+              value={formData.guestPhoneNum}
               onChange={handleInputChange}
               required
               className="w-full p-2 border rounded-md text-sm"
+              placeholder="+1234567890"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Thanh toán bằng :
+            </label>
+            <select
+              name="payment"
+              value={formData.payment}
+              onChange={handleInputChange}
+              required
+              className="w-full p-2 border rounded-md text-sm"
+            >
+              <option value="credit_card">Ngân hàng</option>
+
+              <option value="cash">Tiền mặt</option>
+            </select>
           </div>
 
           <div className="flex justify-between font-semibold mb-2">
@@ -210,7 +261,7 @@ const CartSidebar = () => {
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
       <div
         ref={sidebarRef}
-        className="fixed right-0 top-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out"
+        className="fixed right-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out"
       >
         <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
           <h2 className="text-lg font-semibold flex items-center gap-2">
