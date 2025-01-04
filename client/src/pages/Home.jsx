@@ -1,18 +1,43 @@
 import React, { useEffect, useState } from "react";
 import CallToAction from "../components/CallToAction";
-import PostCard from "../components/PostCard";
+import ProductCard from "../components/PostCard";
 import { Link } from "react-router-dom";
+import Hero from "../components/test/Hero/Hero";
+import { getAllProducts } from "../Utils/ApiFunctions";
+
 const Home = () => {
-  const [posts, setPosts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const res = await fetch("/api/post/getPosts");
-      const data = await res.json();
-      setPosts(data.posts);
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllProducts();
+        setProducts(data);
+        setShowMore(data.length === 9);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setProducts([]);
+        setLoading(false);
+      }
     };
-    fetchPosts();
+    fetchProducts();
   }, []);
+
+  const handleShowMore = async () => {
+    const numberOfProducts = products.length;
+    try {
+      const data = await getAllProducts();
+      const newProducts = data.slice(numberOfProducts, numberOfProducts + 9);
+      setProducts((prev) => [...prev, ...newProducts]);
+      setShowMore(newProducts.length === 9);
+    } catch (error) {
+      console.error("Error fetching more products:", error);
+    }
+  };
 
   return (
     <div>
@@ -32,27 +57,49 @@ const Home = () => {
           Xem tất cả các cấu hình và linh kiện tại đây
         </Link>
       </div>
+
+      <Hero />
+
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-semibold sm:border-b border-gray-500 p-3 mt-5">
+          Featured Products:
+        </h1>
+        <div className="p-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          {!loading && products.length === 0 && (
+            <p className="text-xl text-gray-500 col-span-full">
+              No products found.
+            </p>
+          )}
+          {loading && (
+            <p className="text-xl text-gray-500 col-span-full">Loading...</p>
+          )}
+          {!loading &&
+            products &&
+            products.map((product) => (
+              <div
+                key={product.productId}
+                className="w-full flex justify-center"
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+        </div>
+        {showMore && (
+          <button
+            onClick={handleShowMore}
+            className="text-teal-500 text-lg hover:underline p-7 w-full"
+          >
+            Show More
+          </button>
+        )}
+        <div className="flex justify-center pb-7">
+          <Link to="/search" className="text-lg text-teal-500 hover:underline">
+            View all products
+          </Link>
+        </div>
+      </div>
       <div className="p-3 bg-amber-100 dark:bg-slate-700">
         <CallToAction />
-      </div>
-
-      <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7">
-        {posts && posts.length > 0 && (
-          <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-semibold text-center">Recent Posts</h2>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {posts.map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
-            </div>
-            <Link
-              to={"/search"}
-              className="text-lg text-teal-500 hover:underline text-center"
-            >
-              View all posts
-            </Link>
-          </div>
-        )}
       </div>
     </div>
   );
