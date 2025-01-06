@@ -207,8 +207,7 @@ export default function ProductSearch() {
 
   return (
     <div className="flex flex-col md:flex-row">
-      {/* Sidebar/Filter section remains the same */}
-      <div className="p-4 border-b md:border-r md:min-h-screen border-gray-500 md:w-[300px]">
+      <div className="p-7 border-b md:border-r md:min-h-screen border-gray-500">
         <form className="flex flex-col gap-8" onSubmit={handleSubmit}>
           <div className="whitespace-nowrap font-semibold">
             <label>Search Term:</label>
@@ -274,39 +273,29 @@ export default function ProductSearch() {
         </form>
       </div>
 
-      {/* Main content area */}
-      <div className="flex-1">
+      <div className="w-full">
         <h1 className="text-3xl font-semibold sm:border-b border-gray-500 p-3 mt-5">
           Product Results:
         </h1>
-        <div className="p-7 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="p-7 flex flex-wrap gap-4 justify-center">
           {!loading && products.length === 0 && (
-            <p className="text-xl text-gray-500 col-span-full">
-              No products found.
-            </p>
+            <p className="text-xl text-gray-500">No products found.</p>
           )}
-          {loading && (
-            <p className="text-xl text-gray-500 col-span-full">Loading...</p>
-          )}
+          {loading && <p className="text-xl text-gray-500">Loading...</p>}
           {!loading &&
             products &&
             products.map((product) => (
-              <div
-                key={product.productId}
-                className="w-full flex justify-center"
-              >
-                <ProductCard product={product} />
-              </div>
+              <ProductCard key={product.productId} product={product} />
             ))}
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="text-teal-500 text-lg hover:underline p-7 w-full"
+            >
+              Show More
+            </button>
+          )}
         </div>
-        {showMore && (
-          <button
-            onClick={handleShowMore}
-            className="text-teal-500 text-lg hover:underline p-7 w-full"
-          >
-            Show More
-          </button>
-        )}
       </div>
     </div>
   );
