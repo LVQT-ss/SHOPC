@@ -15,13 +15,15 @@ import ScrollToTop from "../components/ScrollToTop";
 import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
-
+import Test from "../pages/test";
 const Layout = () => {
   return (
     <div>
       <ScrollToTop />
-      <Header />
-      <div className="min-h-screen">
+      <div>
+        <Header />
+      </div>
+      <div className="min-h-screen pt-16">
         <Outlet />
       </div>
       <FooterCom />
@@ -104,8 +106,8 @@ export const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
-    path: "Checkout",
-    element: <Checkout />,
+    path: "test",
+    element: <Test />,
   },
   {
     path: "getallproduct",

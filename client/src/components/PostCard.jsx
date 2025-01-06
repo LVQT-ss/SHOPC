@@ -10,14 +10,15 @@ export default function PostCard({ product }) {
   };
 
   return (
-    <div className="group relative w-full border border-teal-500 hover:border-2 h-[420px] overflow-hidden rounded-lg sm:w-[325px] transition-all">
-      <div className="cursor-pointer">
+    <div className="relative w-full border border-teal-500 rounded-lg sm:w-[325px]">
+      <div className="cursor-pointer overflow-hidden">
         <img
           src={product.image || "/placeholder-image.png"}
           alt={product.productName}
-          className="h-[260px] w-full object-cover group-hover:h-[200px] transition-all duration-300 z-20"
+          className="h-[260px] w-full object-cover hover:scale-110 transition-all duration-300"
         />
       </div>
+
       <div className="p-3 flex flex-col gap-2">
         <p className="text-lg font-semibold line-clamp-2">
           {product.productName}
