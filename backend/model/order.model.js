@@ -46,7 +46,7 @@ const Order = sequelize.define('Order', {
 
     orderStatus: {
         type: DataTypes.ENUM('active', 'inactive', 'complete'), // Restrict to these 3 values
-        defaultValue: 'active',
+        defaultValue: 'inactive',
         allowNull: false,
     },
 }, {

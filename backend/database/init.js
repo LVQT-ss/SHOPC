@@ -4,6 +4,7 @@ import User from '../model/user.model.js';
 import product from '../model/product.model.js';
 import order from '../model/order.model.js';
 import orderDetails from '../model/orderDetails.model.js';
+import transaction from '../model/transactions.model.js';
 const initDB = async () => {
     try {
         await sequelize.authenticate();

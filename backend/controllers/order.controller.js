@@ -56,7 +56,7 @@ export const createOrder = async (req, res) => {
             orderNumber,
             orderDate: Date.now(), // Hardcoded date as requested
             orderTotal: totalAmount,
-            orderStatus: orderStatus || 'active'
+            orderStatus: orderStatus
         }, { transaction });
 
         // Create order details
