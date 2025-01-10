@@ -362,7 +362,62 @@ async function deleteUser(userId) {
 	}
 }
 
+// Transaction APIs
+async function createTransaction(transactionData) {
+	try {
+		const response = await api.post("/transactions/create", transactionData, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error creating transaction");
+	}
+}
 
+async function getAllTransactions() {
+	try {
+		const response = await api.get("/transactions/all", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching transactions");
+	}
+}
+
+async function getTransactionById(transactionId) {
+	try {
+		const response = await api.get(`/transactions/${transactionId}`, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error fetching transaction: ${error.message}`);
+	}
+}
+
+async function getDailyTransactions() {
+	try {
+		const response = await api.get("/transactions/daily", {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching daily transactions");
+	}
+}
+
+async function getTransactionsByDateRange(startDate, endDate) {
+	try {
+		const response = await api.get("/transactions/range", {
+			params: { startDate, endDate },
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error("Error fetching transactions by date range");
+	}
+}
 export {
 	// Auth exports
 	register,
@@ -401,6 +456,13 @@ export {
 	getProductById,
 	updateProduct,
 	updateProductActiveStatus,
-	deleteProduct
+	deleteProduct,
+
+	//Transaction 
+	createTransaction,
+	getAllTransactions,
+	getTransactionById,
+	getDailyTransactions,
+	getTransactionsByDateRange
 
 };
