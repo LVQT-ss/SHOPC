@@ -30,7 +30,7 @@ const Transaction = sequelize.define('Transaction', {
         allowNull: false
     },
     paymentMethod: {
-        type: DataTypes.ENUM('qr_code'),
+        type: DataTypes.ENUM('qr_code', 'cash'),
         allowNull: false
     },
     status: {
