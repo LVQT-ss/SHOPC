@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOrder, deleteOrder, getActiveOrders, getAllOrders, getOrderById, getOrdersByUser, updateOrder }
+import { createOrder, deleteOrder, getActiveOrders, getAllOrders, getLast7DaysSales, getOrderById, getOrdersByUser, getOrderStats, totalOrderToday, totalSaleToday, updateOrder }
     from '../controllers/order.controller.js';
 
 const router = express.Router();
@@ -128,6 +128,155 @@ router.get('/active', getActiveOrders);
  */
 router.get('/user', getOrdersByUser);
 
+
+/**
+ * @swagger
+ * /api/orders/stats:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Get order statistics including daily, today's, and monthly data
+ *     description: Retrieves sales statistics including daily sales for the last 7 days, today's orders and sales, and monthly totals
+ *     security:
+ *       - Authorization: []
+ *     responses:
+ *       200:
+ *         description: Statistics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 dailySales:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       date:
+ *                         type: string
+ *                         format: date
+ *                         example: "2025-02-13"
+ *                       orderCount:
+ *                         type: integer
+ *                         example: 15
+ *                       totalSales:
+ *                         type: number
+ *                         format: float
+ *                         example: 2500.50
+ *                 todayStats:
+ *                   type: object
+ *                   properties:
+ *                     orderCount:
+ *                       type: integer
+ *                       example: 5
+ *                     totalSales:
+ *                       type: number
+ *                       format: float
+ *                       example: 750.25
+ *                 monthlyStats:
+ *                   type: object
+ *                   properties:
+ *                     orderCount:
+ *                       type: integer
+ *                       example: 45
+ *                     totalSales:
+ *                       type: number
+ *                       format: float
+ *                       example: 7500.75
+ *       500:
+ *         description: Server error
+ */
+router.get('/stats', getOrderStats);
+
+/**
+ * @swagger
+ * /api/orders/today/total-orders:
+ *   get:
+ *     tags:
+ *     - Orders
+ *     summary: Get total orders placed today
+ *     responses:
+ *       200:
+ *         description: Total orders today retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Total orders today retrieved successfully"
+ *                 totalOrdersToday:
+ *                   type: integer
+ *                   example: 10
+ *       500:
+ *         description: Server error
+ */
+router.get('/today/total-orders', totalOrderToday);
+
+/**
+ * @swagger
+ * /api/orders/today/total-sales:
+ *   get:
+ *     tags:
+ *     - Orders
+ *     summary: Get total products sold today
+ *     responses:
+ *       200:
+ *         description: Total sales today retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Total sales today retrieved successfully"
+ *                 totalSalesToday:
+ *                   type: integer
+ *                   example: 25
+ *       500:
+ *         description: Server error
+ */
+router.get('/today/total-sales', totalSaleToday);
+/**
+ * @swagger
+ * /api/orders/sales/last7days:
+ *   get:
+ *     tags:
+ *     - Orders
+ *     summary: Get sales data for the last 7 days
+ *     description: Retrieves total sales for each day in the last 7 days, formatted for charts.
+ *     responses:
+ *       200:
+ *         description: Sales data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Sales data for the last 7 days retrieved successfully"
+ *                 sales:
+ *                   type: object
+ *                   properties:
+ *                     labels:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                         example: "2025-02-07"
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         type: number
+ *                         format: float
+ *                         example: 2500.50
+ *       500:
+ *         description: Server error
+ */
+router.get('/sales/last7days', getLast7DaysSales);
+
 /**
  * @swagger
  * /api/orders/{orderId}:
@@ -237,5 +386,10 @@ router.put('/:orderId', updateOrder);
  *         description: Server error
  */
 router.delete('/:orderId', deleteOrder);
+
+
+
+
+
 
 export default router;

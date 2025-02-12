@@ -3,6 +3,7 @@ import OrderDetails from '../model/orderDetails.model.js';
 import Product from '../model/product.model.js';
 import User from '../model/user.model.js';
 import sequelize from '../database/db.js';
+import { Op, fn, col, literal } from 'sequelize';
 
 export const createOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
@@ -399,6 +400,126 @@ export const deleteOrder = async (req, res) => {
         await transaction.rollback();
         res.status(500).json({
             message: 'Error deleting order',
+            error: error.message
+        });
+    }
+};
+
+
+export const getOrderStats = async (req, res) => {
+    try {
+
+        const totalSalesThisMonth = await Order.sum('orderTotal', {
+            where: {
+                userId: 1,
+                orderDate: {
+                    [Op.gte]: fn('DATE_TRUNC', 'month', fn('NOW'))
+                }
+            }
+        });
+
+        res.status(200).json({
+            // totalOrdersToday,
+            // totalSalesToday: totalSalesToday || 0,
+            totalSalesThisMonth: totalSalesThisMonth || 0
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching order statistics',
+            error: error.message
+        });
+    }
+};
+
+export const totalOrderToday = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to start of the day (local time)
+
+        const startOfDay = today.toISOString().split("T")[0]; // YYYY-MM-DD format
+
+
+        const totalOrdersToday = await Order.count({
+            where: {
+                orderDate: {
+                    [Op.gte]: startOfDay // Ensure the query matches correctly
+                }
+            }
+        });
+
+        res.status(200).json({
+            message: "Total orders today retrieved successfully",
+            totalOrdersToday
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error fetching total orders today",
+            error: error.message
+        });
+    }
+};
+
+export const totalSaleToday = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of the day
+
+        const startOfDay = today.toISOString().split("T")[0]; // YYYY-MM-DD format
+
+        const totalSalesToday = await Order.sum('orderTotal', {
+            where: {
+                orderDate: {
+                    [Op.gte]: startOfDay // Matches today's orders
+                }
+            }
+        });
+
+        res.status(200).json({
+            message: "Total sales today retrieved successfully",
+            totalSalesToday: totalSalesToday || 0
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error fetching total sales today",
+            error: error.message
+        });
+    }
+};
+
+export const getLast7DaysSales = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set time to start of the day
+        const last7Days = new Date();
+        last7Days.setDate(today.getDate() - 6); // Get the date 6 days ago (includes today)
+
+        const salesData = await Order.findAll({
+            attributes: [
+                [fn('DATE', col('orderDate')), 'date'],
+                [fn('SUM', col('orderTotal')), 'totalSales']
+            ],
+            where: {
+                orderDate: {
+                    [Op.between]: [last7Days, today]
+                }
+            },
+            group: [fn('DATE', col('orderDate'))],
+            order: [[fn('DATE', col('orderDate')), 'ASC']]
+        });
+
+        // Format the response to match chart data structure
+        const response = {
+            labels: salesData.map(sale => sale.getDataValue('date')),
+            data: salesData.map(sale => parseFloat(sale.getDataValue('totalSales')))
+        };
+
+        res.status(200).json({
+            message: "Sales data for the last 7 days retrieved successfully",
+            sales: response
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Error fetching sales data",
             error: error.message
         });
     }
