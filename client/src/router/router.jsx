@@ -16,6 +16,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
+import Blog from "../pages/Blog";
+
 const Layout = () => {
   return (
     <div>
@@ -58,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: "search",
         element: <Search />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
       },
       {
         path: "dashboard",
