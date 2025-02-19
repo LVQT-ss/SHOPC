@@ -145,7 +145,7 @@ const Header = () => {
             <Link to="/about">About</Link>
           </Navbar.Link>
           <Navbar.Link active={path === "/blog"} as={"div"}>
-            <Link to="/blog">blog</Link>
+            <Link to="/blog">Blog</Link>
           </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>
