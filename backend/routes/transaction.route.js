@@ -6,10 +6,82 @@ import {
     getDailyTransactions,
     getTransactionsByDateRange,
     createVNPayPayment,
-    vnpayReturn
+    vnpayReturn,
+    checkPaymentStatus,
+    generateQRCode
 } from '../controllers/transaction.controller.js';
 
 const router = express.Router();
+
+
+/**
+ * @swagger
+ * /api/transactions/generateQRCode:
+ *   post:
+ *     tags:
+ *     - Transactions
+ *     summary: Generate a QR code for payment
+ *     description: Creates a transaction and returns a QR code for payment.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *             properties:
+ *               orderId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: QR Code generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 qrCode:
+ *                   type: string
+ *                   format: base64
+ *                 transactionId:
+ *                   type: integer
+ *       400:
+ *         description: Invalid request or missing parameters
+ */
+router.post('/generateQRCode', generateQRCode);
+
+/**
+ * @swagger
+ * /api/transactions/checkStatus:
+ *   get:
+ *     tags:
+ *     - Transactions
+ *     summary: Check payment status
+ *     description: Checks the status of a transaction.
+ *     parameters:
+ *       - in: query
+ *         name: transactionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         example: 1001
+ *     responses:
+ *       200:
+ *         description: Returns transaction status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "pending"
+ *       400:
+ *         description: Invalid request or missing parameters
+ */
+router.get('/checkStatus', checkPaymentStatus);
 
 
 /**

@@ -5,8 +5,52 @@ import sequelize from '../database/db.js';
 import crypto from 'crypto';
 import querystring from 'querystring';
 import dotenv from 'dotenv';
-
+import QRCode from "qrcode";
 dotenv.config();
+
+
+export const generateQRCode = async (req, res) => {
+    const { orderId } = req.body;
+
+    if (!orderId) {
+        return res.status(400).json({ message: "Order ID is required" });
+    }
+
+    const order = await Order.findByPk(orderId);
+    if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+    }
+
+    const transaction = await Transaction.create({
+        transactionNumber: `TRX-${Date.now()}`,
+        orderId,
+        totalAmount: order.orderTotal,
+        paymentMethod: "qr_code",
+        status: "pending",
+    });
+
+    const paymentUrl = `https://your-payment-gateway.com/pay?transactionId=${transaction.transactionId}`;
+    const qrCodeData = await QRCode.toDataURL(paymentUrl);
+
+    res.status(200).json({ qrCode: qrCodeData, transactionId: transaction.transactionId });
+};
+
+export const checkPaymentStatus = async (req, res) => {
+    const { transactionId } = req.query;
+
+    if (!transactionId) {
+        return res.status(400).json({ message: "Transaction ID is required" });
+    }
+
+    const transaction = await Transaction.findByPk(transactionId);
+
+    if (!transaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.status(200).json({ status: transaction.status });
+};
+
 
 export const createTransaction = async (req, res) => {
     const dbTransaction = await sequelize.transaction();
