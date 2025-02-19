@@ -16,6 +16,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
+import ProductDetail from "../pages/ProductDetail";
+
 const Layout = () => {
   return (
     <div>
@@ -94,6 +96,10 @@ export const router = createBrowserRouter([
       {
         path: "post/:postSlug",
         element: <PostPage />,
+      },
+      {
+        path: "product/:productId",
+        element: <ProductDetail />,
       },
     ],
   },
