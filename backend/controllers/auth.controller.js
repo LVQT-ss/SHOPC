@@ -2,7 +2,7 @@ import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../model/user.model.js';
 import { sendPasswordEmail, sendPasswordResetEmail } from '../utils/mailer.js';
-import LoginHistory from '../model/LoginHistory.model.js';
+import LoginHistory from '../model/loginHistory.model.js';
 import 'dotenv/config'
 
 export const register = async (req, res) => {

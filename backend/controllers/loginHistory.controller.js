@@ -1,4 +1,4 @@
-import LoginHistory from '../model/LoginHistory.model.js';
+import LoginHistory from '../model/loginHistory.model.js';
 import User from '../model/user.model.js';
 import { Op } from 'sequelize';
 
