@@ -16,6 +16,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
+import PaymentPage from "../pages/Payment";
+
 const Layout = () => {
   return (
     <div>
@@ -112,6 +114,10 @@ export const router = createBrowserRouter([
   {
     path: "getallproduct",
     element: <GetAllProducts />,
+  },
+  {
+    path: "payment/:orderId",
+    element: <PaymentPage />,
   },
   {
     path: "*",
