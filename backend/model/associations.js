@@ -4,7 +4,7 @@ import OrderDetails from './orderDetails.model.js';
 import Product from './product.model.js';
 import Category from './category.model.js';
 import Transaction from './transactions.model.js';
-import LoginHistory from './LoginHistory.model.js';
+import LoginHistory from './loginHistory.model.js';
 
 function setupAssociations() {
     // User and Order Associations
