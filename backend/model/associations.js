@@ -4,6 +4,7 @@ import OrderDetails from './orderDetails.model.js';
 import Product from './product.model.js';
 import Category from './category.model.js';
 import Transaction from './transactions.model.js';
+import LoginHistory from './LoginHistory.model.js';
 
 function setupAssociations() {
     // User and Order Associations
@@ -25,6 +26,7 @@ function setupAssociations() {
         foreignKey: 'orderId',
         as: 'order'
     });
+
     // Order and transactions Associations 
     Transaction.belongsTo(Order, {
         foreignKey: 'orderId',
@@ -33,7 +35,7 @@ function setupAssociations() {
     Order.hasOne(Transaction, {
         foreignKey: 'orderId',
         as: 'transactionId'
-    })
+    });
 
     // OrderDetails and Product Associations
     OrderDetails.belongsTo(Product, {
@@ -55,6 +57,15 @@ function setupAssociations() {
         as: 'products'
     });
 
+    // User and LoginHistory Associations
+    User.hasMany(LoginHistory, {
+        foreignKey: 'userId',
+        as: 'loginHistory'
+    });
+    LoginHistory.belongsTo(User, {
+        foreignKey: 'userId',
+        as: 'user'
+    });
 }
 
 export default setupAssociations;
