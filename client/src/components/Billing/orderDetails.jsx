@@ -112,106 +112,166 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Roboto",
   },
+  headerInfo: {
+    marginBottom: 15,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  orderInfoRow: {
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+  orderInfoLabel: {
+    width: 100,
+    fontWeight: "bold",
+    fontSize: 10,
+  },
+  orderInfoValue: {
+    flex: 1,
+    fontSize: 10,
+  },
 });
 
-const OrderPDF = ({ order }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.logoContainer}>
-        <Image style={styles.logo} src={logo} />
-      </View>
+const OrderPDF = ({ order }) => {
+  // Lấy tên khách hàng
+  const customerName = order.guestName || order.user?.username;
+  // Lấy số điện thoại
+  const phoneNumber = order.guestPhoneNum;
+  // Định dạng ngày đặt hàng
+  const orderDate = new Date(order.orderDate).toLocaleDateString("vi-VN");
 
-      <Text style={styles.title}>Hóa Đơn Bán Hàng</Text>
+  // Tên file khi in hóa đơn
+  const fileNameForPDF = `hoadon_${customerName}_${phoneNumber}_${orderDate.replace(
+    /\//g,
+    "-"
+  )}.pdf`;
 
-      <View style={styles.header}>
-        <Text style={styles.text}>Mã đơn hàng: {order.orderNumber}</Text>
-        <Text style={styles.text}>
-          Ngày: {new Date(order.orderDate).toLocaleDateString("vi-VN")}
-        </Text>
-        <Text style={styles.text}>Người bán:</Text>
-      </View>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.logoContainer}>
+          <Image style={styles.logo} src={logo} />
+        </View>
 
-      <View style={styles.section}>
-        <Text style={[styles.bold, styles.text]}>Thông tin khách hàng</Text>
-        <Text style={styles.text}>
-          Tên: {order.guestName || order.user?.username}
-        </Text>
-        <Text style={styles.text}>
-          Email: {order.guestEmail || order.user?.email}
-        </Text>
-        <Text style={styles.text}>Địa chỉ: {order.guestAddress}</Text>
-        <Text style={styles.text}>Số điện thoại: {order.guestPhoneNum}</Text>
-      </View>
+        <Text style={styles.title}>Hóa Đơn Bán Hàng</Text>
 
-      <Table style={styles.table}>
-        <TR style={styles.tableHeader}>
-          <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>STT</TD>
-          <TD style={[styles.tdLeft, styles.bold, { flex: 4 }]}>Sản Phẩm</TD>
-          <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>SL</TD>
-          <TD style={[styles.td, styles.bold, { flex: 2 }]}>Đơn Giá</TD>
-          <TD style={[styles.td, styles.bold, { flex: 2 }]}>Tổng tiền</TD>
-          <TD style={[styles.td, styles.bold, { flex: 1 }]}>Bảo hành</TD>
-        </TR>
-        {order.orderDetails.map((item) => (
-          <TR key={item.orderDetailsId}>
-            <TD style={[styles.td, styles.text, { flex: 0.5 }]}>1</TD>
-            <TD style={[styles.tdLeft, styles.text, { flex: 4 }]}>
-              {item.product.productName}
-            </TD>
-            <TD style={[styles.td, styles.text, { flex: 0.5 }]}>
-              {item.quantity}
-            </TD>
-            <TD style={[styles.td, styles.text, { flex: 2 }]}>
-              {parseFloat(item.price).toLocaleString("vi-VN")} đ
-            </TD>
-            <TD style={[styles.td, styles.text, { flex: 2 }]}>
-              {(parseFloat(item.price) * item.quantity).toLocaleString("vi-VN")}{" "}
-              đ
-            </TD>
-            <TD style={[styles.td, styles.text, { flex: 1 }]}>12 tháng</TD>
+        <View style={styles.headerInfo}>
+          <View style={styles.orderInfoRow}>
+            <Text style={styles.orderInfoLabel}>Mã đơn hàng:</Text>
+            <Text style={styles.orderInfoValue}>{order.orderNumber}</Text>
+          </View>
+          <View style={styles.orderInfoRow}>
+            <Text style={styles.orderInfoLabel}>Ngày đặt:</Text>
+            <Text style={styles.orderInfoValue}>{orderDate}</Text>
+          </View>
+          <View style={styles.orderInfoRow}>
+            <Text style={styles.orderInfoLabel}>Khách hàng:</Text>
+            <Text style={styles.orderInfoValue}>{customerName}</Text>
+          </View>
+          <View style={styles.orderInfoRow}>
+            <Text style={styles.orderInfoLabel}>Số điện thoại:</Text>
+            <Text style={styles.orderInfoValue}>{phoneNumber}</Text>
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.text}>
+            Email: {order.guestEmail || order.user?.email}
+          </Text>
+          <Text style={styles.text}>Địa chỉ: {order.guestAddress}</Text>
+          <Text style={styles.text}>
+            Phương thức thanh toán: {order.payment}
+          </Text>
+        </View>
+
+        <Table style={styles.table}>
+          <TR style={styles.tableHeader}>
+            <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>STT</TD>
+            <TD style={[styles.tdLeft, styles.bold, { flex: 4 }]}>Sản Phẩm</TD>
+            <TD style={[styles.td, styles.bold, { flex: 0.5 }]}>SL</TD>
+            <TD style={[styles.td, styles.bold, { flex: 2 }]}>Đơn Giá</TD>
+            <TD style={[styles.td, styles.bold, { flex: 2 }]}>Tổng tiền</TD>
+            <TD style={[styles.td, styles.bold, { flex: 1 }]}>BH</TD>
           </TR>
-        ))}
-      </Table>
+          {order.orderDetails.map((item, index) => (
+            <TR key={item.orderDetailsId}>
+              <TD style={[styles.td, styles.text, { flex: 0.5 }]}>
+                {index + 1}
+              </TD>
+              <TD style={[styles.tdLeft, styles.text, { flex: 4 }]}>
+                {item.product.productName}
+              </TD>
+              <TD style={[styles.td, styles.text, { flex: 0.5 }]}>
+                {item.quantity}
+              </TD>
+              <TD style={[styles.td, styles.text, { flex: 2 }]}>
+                {parseFloat(item.price).toLocaleString("vi-VN")} đ
+              </TD>
+              <TD style={[styles.td, styles.text, { flex: 2 }]}>
+                {(parseFloat(item.price) * item.quantity).toLocaleString(
+                  "vi-VN"
+                )}{" "}
+                đ
+              </TD>
+              <TD style={[styles.td, styles.text, { flex: 1 }]}>12 tháng</TD>
+            </TR>
+          ))}
+        </Table>
 
-      <View style={styles.total}>
-        <View style={styles.row}>
-          <Text style={[styles.bold, styles.text]}>
-            Tổng tiền cần thanh toán
-          </Text>
-          <Text style={[styles.bold, styles.text]}>
-            {parseFloat(order.orderTotal).toLocaleString("vi-VN")} vnđ
+        <View style={styles.total}>
+          <View style={styles.row}>
+            <Text style={[styles.bold, styles.text]}>
+              Tổng tiền cần thanh toán
+            </Text>
+            <Text style={[styles.bold, styles.text]}>
+              {parseFloat(order.orderTotal).toLocaleString("vi-VN")} vnđ
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.warranty}>
+          <Text>
+            * Các trường hợp bảo hành vui lòng xem tại: anhempcpro.store/about
           </Text>
         </View>
-      </View>
+        <View style={styles.signature}>
+          <View style={styles.signatureBox}>
+            <View style={styles.signatureLine} />
+            <Text style={styles.signatureLabel}>Người nhận hàng</Text>
+            <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
+              (Ký và ghi rõ họ tên)
+            </Text>
+          </View>
 
-      <View style={styles.warranty}>
-        <Text>
-          * Các trường hợp bảo hành vui lòng xem tại: anhempcpro.store/about
-        </Text>
-      </View>
-      <View style={styles.signature}>
-        <View style={styles.signatureBox}>
-          <View style={styles.signatureLine} />
-          <Text style={styles.signatureLabel}>Người nhận hàng</Text>
-          <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
-            (Ký và ghi rõ họ tên)
-          </Text>
+          <View style={styles.signatureBox}>
+            <View style={styles.signatureLine} />
+            <Text style={styles.signatureLabel}>Người giao hàng</Text>
+            <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
+              (Ký và ghi rõ họ tên)
+            </Text>
+          </View>
         </View>
-
-        <View style={styles.signatureBox}>
-          <View style={styles.signatureLine} />
-          <Text style={styles.signatureLabel}>Người giao hàng</Text>
-          <Text style={[styles.signatureLabel, { fontSize: 8 }]}>
-            (Ký và ghi rõ họ tên)
-          </Text>
-        </View>
-      </View>
-    </Page>
-  </Document>
-);
+      </Page>
+    </Document>
+  );
+};
 
 const OrderDetails = ({ order, onClose }) => {
   if (!order) return null;
+
+  // Lấy tên khách hàng
+  const customerName = order.guestName || order.user?.username;
+  // Lấy số điện thoại
+  const phoneNumber = order.guestPhoneNum;
+  // Định dạng ngày đặt hàng
+  const orderDate = new Date(order.orderDate).toLocaleDateString("vi-VN");
+
+  // Tên file khi in hóa đơn
+  const fileNameForPDF = `hoadon_${customerName}_${phoneNumber}_${orderDate.replace(
+    /\//g,
+    "-"
+  )}.pdf`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -307,7 +367,7 @@ const OrderDetails = ({ order, onClose }) => {
           <div className="border-t pt-4 flex justify-center">
             <PDFDownloadLink
               document={<OrderPDF order={order} />}
-              fileName={`order-${order.orderNumber}.pdf`}
+              fileName={fileNameForPDF}
             >
               {({ loading }) => (
                 <Button gradientDuoTone="purpleToBlue" disabled={loading}>
