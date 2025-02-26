@@ -18,7 +18,7 @@ import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
 import ProductDetail from "../pages/ProductDetail";
 
-import Blog from "../pages/Blog";
+import Blog from "../pages/Blog Page/Blog";
 
 const Layout = () => {
   return (
@@ -125,10 +125,10 @@ export const router = createBrowserRouter([
     path: "getallproduct",
     element: <GetAllProducts />,
   },
-  {
-    path: "payment/:orderId",
-    element: <PaymentPage />,
-  },
+  // {
+  //   path: "payment/:orderId",
+  //   element: <PaymentPage />,
+  // },
   {
     path: "*",
     element: <ErrorBoundary />,
