@@ -6,7 +6,57 @@ import crypto from 'crypto';
 import querystring from 'querystring';
 import dotenv from 'dotenv';
 import QRCode from "qrcode";
+import OrderDetails from "../model/orderDetails.model.js";
+import Product from "../model/product.model.js";
 dotenv.config();
+
+export const generateVietQR = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        if (!orderId) {
+            return res.status(400).json({ message: "Order ID is required" });
+        }
+
+        // 🔹 Fetch order details
+        const order = await Order.findByPk(orderId);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // 🔹 Get total price from OrderDetails
+        const orderDetails = await OrderDetails.findAll({ where: { orderId } });
+        if (!orderDetails.length) {
+            return res.status(404).json({ message: "No order details found" });
+        }
+
+        // 🔹 Calculate total price
+        const totalPrice = orderDetails.reduce((sum, detail) => sum + parseFloat(detail.price || 0), 0);
+
+        // 🔹 Get bank account details from .env
+        const { ACCOUNT_NAME, ACCOUNT_NUMBER, BANK_CODE } = process.env;
+        if (!ACCOUNT_NAME || !ACCOUNT_NUMBER || !BANK_CODE) {
+            return res.status(500).json({ message: "Bank details are missing in .env file" });
+        }
+
+        // 🔹 Generate VietQR URL
+        const vietQRUrl = `https://img.vietqr.io/image/MB-0328789712-qr_only.png?amount=30&addInfo=Order-95`;
+
+        // 🔹 Generate QR Code as base64 image
+        const qrCodeBase64 = await QRCode.toDataURL(vietQRUrl);
+
+        // 🔹 Return QR code URL & Base64
+        res.status(200).json({
+            message: "VietQR Code generated successfully",
+            vietQRUrl,
+            qrCodeBase64,
+            orderId,
+            totalPrice,
+        });
+    } catch (error) {
+        console.error("Error generating VietQR:", error);
+        res.status(500).json({ message: "Error generating VietQR", error: error.message });
+    }
+};
 
 
 export const generateQRCode = async (req, res) => {
@@ -35,21 +85,7 @@ export const generateQRCode = async (req, res) => {
     res.status(200).json({ qrCode: qrCodeData, transactionId: transaction.transactionId });
 };
 
-export const checkPaymentStatus = async (req, res) => {
-    const { transactionId } = req.query;
 
-    if (!transactionId) {
-        return res.status(400).json({ message: "Transaction ID is required" });
-    }
-
-    const transaction = await Transaction.findByPk(transactionId);
-
-    if (!transaction) {
-        return res.status(404).json({ message: "Transaction not found" });
-    }
-
-    res.status(200).json({ status: transaction.status });
-};
 
 
 export const createTransaction = async (req, res) => {
@@ -272,5 +308,90 @@ export const getTransactionsByDateRange = async (req, res) => {
     } catch (err) {
         console.error('Error fetching transactions by date range:', err);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// export const generateVietQR = async (req, res) => {
+//     try {
+//         const { orderId, paymentMethod } = req.body;
+
+//         if (!orderId || !paymentMethod) {
+//             return res.status(400).json({ message: "Missing orderId or paymentMethod" });
+//         }
+
+//         const order = await Order.findByPk(orderId);
+//         if (!order) {
+//             return res.status(404).json({ message: "Order not found" });
+//         }
+
+//         if (order.orderStatus !== "inactive") {
+//             return res.status(400).json({ message: "Order is not in correct status for payment" });
+//         }
+
+//         const totalAmount = parseFloat(order.orderTotal);
+//         const transaction = await Transaction.create({
+//             transactionNumber: `TRX-${Date.now()}`,
+//             orderId,
+//             totalAmount,
+//             paymentMethod,
+//             status: "pending",
+//         });
+
+//         // Thông tin tài khoản ngân hàng nhận tiền
+//         const bankInfo = {
+//             bankCode: process.env.BANK_CODE,
+//             accountNumber: process.env.ACCOUNT_NUMBER,
+//             accountName: process.env.ACCOUNT_NAME,
+//             amount: totalAmount,
+//             description: `Thanh toan don hang ${orderId}`,
+//         };
+
+//         // URL VietQR (Giả lập API hoặc sử dụng dịch vụ của ngân hàng)
+//         const vietQRUrl = `https://api.vietqr.io/v2/generate?qrData=${encodeURIComponent(JSON.stringify(bankInfo))}`;
+//         const qrCode = await QRCode.toDataURL(vietQRUrl);
+
+//         res.status(200).json({
+//             qrCode,
+//             transactionId: transaction.transactionId,
+//             message: "QR code generated successfully",
+//         });
+
+//     } catch (error) {
+//         console.error("Error generating VietQR:", error);
+//         res.status(500).json({ message: "Error generating VietQR", error: error.message });
+//     }
+// };
+
+
+export const checkPaymentStatus = async (req, res) => {
+    try {
+        const { orderId } = req.query;
+        if (!orderId) {
+            return res.status(400).json({ message: "Order ID is required" });
+        }
+
+        // Tìm giao dịch trong database
+        const transaction = await Transaction.findOne({ where: { orderId } });
+
+        if (!transaction) {
+            return res.status(404).json({ message: "Transaction not found" });
+        }
+
+        // Giả lập kiểm tra thanh toán từ ngân hàng (Hoặc gọi API ngân hàng nếu có)
+        const isPaid = Math.random() > 0.5; // Giả lập 50% đã thanh toán
+
+        if (isPaid) {
+            await transaction.update({ status: "completed" });
+
+            // Cập nhật trạng thái đơn hàng
+            await Order.update({ orderStatus: "complete" }, { where: { orderId } });
+
+            return res.status(200).json({ message: "Payment confirmed", status: "completed" });
+        } else {
+            return res.status(200).json({ message: "Payment pending", status: "pending" });
+        }
+    } catch (error) {
+        console.error("Error checking payment status:", error);
+        res.status(500).json({ message: "Error checking payment status", error: error.message });
     }
 };

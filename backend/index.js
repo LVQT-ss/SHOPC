@@ -10,6 +10,7 @@ import categoryRoutes from './routes/category.route.js';
 import transactionRoutes from './routes/transaction.route.js';
 import blogRoutes from './routes/blog.route.js';
 import orderRoutes from './routes/order.route.js'
+import loginHistoryRouter from './routes/loginHistory.route.js'
 import dotenv from 'dotenv';
 import setupAssociations from './model/associations.js';
 
@@ -32,6 +33,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/blogs', blogRoutes); 
+app.use('/api/login-history', loginHistoryRouter);
+
 // Initialize and synchronize the database
 initDB().then(() => {
     app.listen(port, () => {

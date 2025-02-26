@@ -10,6 +10,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [orderId, setOrderId] = useState(null); // Lưu ID của đơn hàng sau khi tạo
   const [formData, setFormData] = useState({
     address: "",
     phoneNumber: "",
@@ -32,7 +33,8 @@ const Checkout = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  // Xử lý khi nhấn "Place Order"
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -45,9 +47,9 @@ const Checkout = () => {
 
     try {
       const orderData = {
-        userId: 1, // For guest order
+        userId: 1,
         totalAmount,
-        orderStatus: "active",
+        orderStatus: "inactive",
         guestAddress: formData.address,
         guestPhoneNum: formData.phoneNumber,
         orderItems: cartItems.map((item) => ({
@@ -57,8 +59,9 @@ const Checkout = () => {
         })),
       };
 
-      await createOrder(orderData);
+      const orderResponse = await createOrder(orderData);
       setSuccess(true);
+      setOrderId(orderResponse.orderId); // Lưu orderId để dùng cho "Pay Now"
       dispatch(clearCart());
 
       // Reset form
@@ -67,15 +70,24 @@ const Checkout = () => {
         phoneNumber: "",
       });
 
-      // Redirect after 2 seconds
+      // Hiển thị thông báo thành công
       setTimeout(() => {
-        navigate("/");
-      }, 2000);
+        setSuccess(false);
+      }, 3000);
     } catch (err) {
       setError(err.message || "Failed to create order");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Xử lý khi nhấn "Pay Now"
+  const handlePayNow = () => {
+    if (!orderId) {
+      setError("Please place an order first!");
+      return;
+    }
+    navigate(`/payment/${orderId}`);
   };
 
   return (
@@ -84,8 +96,7 @@ const Checkout = () => {
 
       {error && (
         <Alert variant="destructive">
-          <Alert className="h-4 w-4" />
-          <Alert>Error</Alert>
+          <AlertCircle className="h-4 w-4" />
           <Alert>{error}</Alert>
         </Alert>
       )}
@@ -94,7 +105,7 @@ const Checkout = () => {
         <Alert className="bg-green-50 text-green-800 border-green-200">
           <CheckCircle className="h-4 w-4 text-green-600" />
           <Alert>Success!</Alert>
-          <Alert>Your order has been placed successfully. Redirecting...</Alert>
+          <Alert>Order placed successfully.</Alert>
         </Alert>
       )}
 
@@ -115,7 +126,7 @@ const Checkout = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handlePlaceOrder} className="space-y-6">
         <div>
           <label htmlFor="address" className="block text-sm font-medium mb-2">
             Delivery Address
@@ -157,6 +168,15 @@ const Checkout = () => {
           {loading ? "Processing..." : "Place Order"}
         </button>
       </form>
+
+      {/* Nút Pay Now */}
+      <button
+        onClick={handlePayNow}
+        disabled={!orderId}
+        className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors mt-4"
+      >
+        Pay Now
+      </button>
     </div>
   );
 };

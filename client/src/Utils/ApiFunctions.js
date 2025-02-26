@@ -418,6 +418,19 @@ async function getTransactionsByDateRange(startDate, endDate) {
 		throw new Error("Error fetching transactions by date range");
 	}
 }
+
+async function generateVietQR(orderId, paymentMethod) {
+	try {
+		const response = await api.post("/transactions/generate-vietqr", { orderId, paymentMethod }, {
+			headers: getHeader()
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error generating VietQR");
+	}
+}
+
+
 export {
 	// Auth exports
 	register,
@@ -463,6 +476,9 @@ export {
 	getAllTransactions,
 	getTransactionById,
 	getDailyTransactions,
-	getTransactionsByDateRange
+	getTransactionsByDateRange,
+
+	// QR By check 
+	generateVietQR
 
 };

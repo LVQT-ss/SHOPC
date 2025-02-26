@@ -16,6 +16,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
+import ProductDetail from "../pages/ProductDetail";
+
+import Blog from "../pages/Blog Page/Blog";
+
 const Layout = () => {
   return (
     <div>
@@ -60,6 +64,10 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
         path: "dashboard",
         element: (
           <ProtectedRoute allowedRoles={["Admin"]}>
@@ -95,6 +103,10 @@ export const router = createBrowserRouter([
         path: "post/:postSlug",
         element: <PostPage />,
       },
+      {
+        path: "product/:productId",
+        element: <ProductDetail />,
+      },
     ],
   },
   {
@@ -113,6 +125,10 @@ export const router = createBrowserRouter([
     path: "getallproduct",
     element: <GetAllProducts />,
   },
+  // {
+  //   path: "payment/:orderId",
+  //   element: <PaymentPage />,
+  // },
   {
     path: "*",
     element: <ErrorBoundary />,

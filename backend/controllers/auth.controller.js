@@ -2,6 +2,7 @@ import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../model/user.model.js';
 import { sendPasswordEmail, sendPasswordResetEmail } from '../utils/mailer.js';
+import LoginHistory from '../model/loginHistory.model.js';
 import 'dotenv/config'
 
 export const register = async (req, res) => {
@@ -44,6 +45,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
+  const { latitude, longitude, deviceInfo } = req.body; // Thêm thông tin vị trí và thiết bị
+  const ipAddress = req.ip || req.connection.remoteAddress;
 
   if (!username || !password) {
     return res.status(400).json({ message: "Username and password are required" });
@@ -53,17 +56,60 @@ export const login = async (req, res) => {
     const user = await User.findOne({ where: { username } });
 
     if (!user) {
+      // Lưu lại thông tin đăng nhập thất bại
+      await LoginHistory.create({
+        userId: null, // Không có user
+        loginTimestamp: new Date(),
+        ipAddress,
+        deviceInfo: deviceInfo || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        loginStatus: 'failed'
+      });
+
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
     const passwordMatch = await bcryptjs.compare(password, user.password);
 
     if (!passwordMatch) {
+      // Lưu lại thông tin đăng nhập thất bại
+      await LoginHistory.create({
+        userId: user.userId,
+        loginTimestamp: new Date(),
+        ipAddress,
+        deviceInfo: deviceInfo || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        loginStatus: 'failed'
+      });
+
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
+    // Nếu đăng nhập thành công, lưu thông tin đăng nhập
+    const locationData = await getLocationName(latitude, longitude); // Hàm này sẽ được định nghĩa sau
+
+    const loginHistory = await LoginHistory.create({
+      userId: user.userId,
+      loginTimestamp: new Date(),
+      ipAddress,
+      deviceInfo: deviceInfo || null,
+      latitude: latitude || null,
+      longitude: longitude || null,
+      locationName: locationData?.formattedAddress || null,
+      loginStatus: 'success'
+    });
+
     const token = jwt.sign(
-      { usertype: user.usertype, email: user.email, image: user.image, address: user.userAddress, phone: user.userPhoneNumber },
+      {
+        userId: user.userId,
+        usertype: user.usertype,
+        email: user.email,
+        image: user.image,
+        address: user.userAddress,
+        phone: user.userPhoneNumber
+      },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -74,6 +120,7 @@ export const login = async (req, res) => {
       message: "Login successful",
       token: token,
       user: userWithoutPassword,
+      loginId: loginHistory.loginId
     });
 
   } catch (err) {
@@ -81,6 +128,33 @@ export const login = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+// Hàm để lấy tên địa điểm từ tọa độ GPS
+// Có thể sử dụng Google Maps API hoặc các dịch vụ khác
+async function getLocationName(latitude, longitude) {
+  if (!latitude || !longitude) return null;
+
+  try {
+    // Đây là một ví dụ sử dụng Google Maps Geocoding API
+    // Bạn cần thay YOUR_API_KEY bằng khóa API của bạn
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status === 'OK' && data.results.length > 0) {
+      return {
+        formattedAddress: data.results[0].formatted_address,
+        components: data.results[0].address_components
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching location data:', error);
+    return null;
+  }
+}
 
 
 // Function generate 9 digit

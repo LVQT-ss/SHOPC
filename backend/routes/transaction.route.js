@@ -8,7 +8,8 @@ import {
     createVNPayPayment,
     vnpayReturn,
     checkPaymentStatus,
-    generateQRCode
+    generateQRCode,
+    generateVietQR
 } from '../controllers/transaction.controller.js';
 
 const router = express.Router();
@@ -272,5 +273,99 @@ router.get('/daily', getDailyTransactions);
  *         description: Success
  */
 router.get('/range', getTransactionsByDateRange);
+
+
+/**
+ * @swagger
+ * /api/transactions/generate-vietqr:
+ *   post:
+ *     tags:
+ *       - Transactions
+ *     summary: Generate VietQR for payment
+ *     description: Generates a VietQR code for payment based on order details.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - orderId
+ *             properties:
+ *               orderId:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: QR Code generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "VietQR Code generated successfully"
+ *                 vietQRUrl:
+ *                   type: string
+ *                   example: "https://img.vietqr.io/image/970422-123456789-qr_only.png?amount=500000&addInfo=Order-1"
+ *                 qrCodeBase64:
+ *                   type: string
+ *                   format: base64
+ *                   example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..."
+ *                 orderId:
+ *                   type: integer
+ *                   example: 1
+ *                 totalPrice:
+ *                   type: number
+ *                   example: 500000
+ *       400:
+ *         description: Invalid request due to missing parameters
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/generate-vietqr", generateVietQR);
+
+
+
+/**
+ * @swagger
+ * /api/transactions/check-payment-status:
+ *   get:
+ *     tags:
+ *       - Transactions
+ *     summary: Check VietQR payment status
+ *     description: Checks the status of a transaction using the order ID.
+ *     parameters:
+ *       - in: query
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Returns transaction status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "completed"
+ *                 message:
+ *                   type: string
+ *                   example: "Payment confirmed"
+ *       400:
+ *         description: Invalid request or missing parameters
+ *       404:
+ *         description: Transaction not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/check-payment-status", checkPaymentStatus);
 
 export default router;
