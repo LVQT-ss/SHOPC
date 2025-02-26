@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button } from "flowbite-react";
-import { getAllOrders } from "../../Utils/ApiFunctions";
+import { getAllOrders, deleteOrder } from "../../Utils/ApiFunctions";
 import { HiSortAscending, HiSortDescending } from "react-icons/hi";
 import OrderDetails from "../Billing/orderDetails";
 
@@ -32,7 +32,7 @@ const DashOrder = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
-
+  const [isDeleting, setIsDeleting] = useState(false);
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -102,6 +102,22 @@ const DashOrder = () => {
     );
   }
 
+  const handleDeleteOrder = async (orderId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa đơn hàng này không?")) {
+      setIsDeleting(true);
+      try {
+        await deleteOrder(orderId);
+        // Cập nhật lại danh sách đơn hàng sau khi xóa
+        fetchOrders();
+        alert("Đơn hàng đã được xóa thành công");
+      } catch (error) {
+        alert("Lỗi khi xóa đơn hàng: " + error.message);
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex justify-between items-center mb-4">
@@ -157,6 +173,7 @@ const DashOrder = () => {
             <Table.HeadCell>Date</Table.HeadCell>
             <Table.HeadCell>Status</Table.HeadCell>
             <Table.HeadCell>details of order</Table.HeadCell>
+            <Table.HeadCell>Delete Order</Table.HeadCell>
           </Table.Head>
           <Table.Body>
             {loading ? (
@@ -219,6 +236,16 @@ const DashOrder = () => {
                       }}
                     >
                       View Details
+                    </Button>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Button
+                      size="sm"
+                      color="failure"
+                      disabled={isDeleting}
+                      onClick={() => handleDeleteOrder(order.orderId)}
+                    >
+                      {isDeleting ? "Đang xóa..." : "Xóa"}
                     </Button>
                   </Table.Cell>
                 </Table.Row>
