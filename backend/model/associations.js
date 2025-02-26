@@ -56,7 +56,7 @@ function setupAssociations() {
     Category.hasMany(Product, {
         foreignKey: 'categoryId',
         as: 'products'
-    });    
+    });
     // product and blog Associations
     Product.hasMany(Blog, {
         foreignKey: 'productId',
@@ -65,6 +65,7 @@ function setupAssociations() {
     Blog.belongsTo(Product, {
         foreignKey: 'productId',
         as: 'product'
+    });
     // User and LoginHistory Associations
     User.hasMany(LoginHistory, {
         foreignKey: 'userId',
