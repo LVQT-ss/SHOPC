@@ -351,7 +351,7 @@ export const updateOrder = async (req, res) => {
 };
 
 
-export const deleteOrder = async (req, res) => {
+export const inactiveOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
@@ -364,19 +364,14 @@ export const deleteOrder = async (req, res) => {
             });
         }
 
-        // Find existing order
+        // Find existing order - không kiểm tra người dùng nữa
         const order = await Order.findOne({
-            where: {
-                orderId,
-                ...(req.user.usertype !== 'Admin' && req.user.usertype !== 'Manager'
-                    ? { userId: req.user.userId }
-                    : {})
-            }
+            where: { orderId }
         });
 
         if (!order) {
             return res.status(404).json({
-                message: 'Order not found or unauthorized access'
+                message: 'Order not found'
             });
         }
 
@@ -405,6 +400,55 @@ export const deleteOrder = async (req, res) => {
     }
 };
 
+export const deleteOrder = async (req, res) => {
+    const transaction = await sequelize.transaction();
+
+    try {
+        const { orderId } = req.params;
+
+        // Validate order ID
+        if (!orderId) {
+            return res.status(400).json({
+                message: 'Order ID is required'
+            });
+        }
+
+        // Find existing order - không kiểm tra người dùng nữa
+        const order = await Order.findOne({
+            where: { orderId }
+        });
+
+        if (!order) {
+            return res.status(404).json({
+                message: 'Order not found'
+            });
+        }
+
+        // Hard delete order
+        await Order.destroy({
+            where: { orderId },
+            transaction
+        });
+
+        // Delete associated order details
+        await OrderDetails.destroy({
+            where: { orderId },
+            transaction
+        });
+
+        await transaction.commit();
+
+        res.status(200).json({
+            message: 'Order permanently deleted successfully'
+        });
+    } catch (error) {
+        await transaction.rollback();
+        res.status(500).json({
+            message: 'Error deleting order',
+            error: error.message
+        });
+    }
+};
 
 export const getOrderStats = async (req, res) => {
     try {
