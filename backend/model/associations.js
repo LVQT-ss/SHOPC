@@ -4,6 +4,7 @@ import OrderDetails from './orderDetails.model.js';
 import Product from './product.model.js';
 import Category from './category.model.js';
 import Transaction from './transactions.model.js';
+import Blog from './blog.model.js';
 import LoginHistory from './loginHistory.model.js';
 
 function setupAssociations() {
@@ -55,8 +56,15 @@ function setupAssociations() {
     Category.hasMany(Product, {
         foreignKey: 'categoryId',
         as: 'products'
+    });    
+    // product and blog Associations
+    Product.hasMany(Blog, {
+        foreignKey: 'productId',
+        as: 'blogs'
     });
-
+    Blog.belongsTo(Product, {
+        foreignKey: 'productId',
+        as: 'product'
     // User and LoginHistory Associations
     User.hasMany(LoginHistory, {
         foreignKey: 'userId',
