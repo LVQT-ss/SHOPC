@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import BlogHeader from "./BlogHeader";
+import { getAllBlogs } from "../../Utils/ApiFunctions";
+import LoadingSpinner from "../../components/Loading/loadingSpinner";
 
 const BlogsLeft = [
   {
@@ -46,6 +48,28 @@ const BlogsLeft = [
 ];
 
 export default function Blog() {
+  const [blogs, setBlogs] =  useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAllBlogs = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllBlogs();
+        if (data) {
+          setBlogs(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllBlogs();
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
+
   return (
     <div className="max-w-6xl mx-auto p-4">
       <BlogHeader />
@@ -57,23 +81,23 @@ export default function Blog() {
             Latest Blog Posts
           </h2>
           <div className="space-y-6">
-            {BlogsLeft.map((blog) => (
+            {blogs.map((blog) => (
               <div
-                key={blog.id}
+                key={blog.blogId}
                 className="flex flex-col md:flex-row bg-gray-100 rounded-lg shadow-md overflow-hidden "
               >
                 <img
-                  src={blog.img}
-                  alt={blog.title}
-                  className="w-full md:w-1/3 object-cover"
+                  src={blog.product.image}
+                  alt={blog.blogTitle}
+                  className="w-48 h-48 object-cover"
                 />
                 <div className="p-4 flex flex-col justify-between">
                   <button className="text-lg font-semibold hover:text-purple-800 text-left">
-                    {blog.title}
+                    {blog.blogTitle}
                   </button>
                   <p className="text-sm text-gray-600">{blog.date}</p>
                   <p className="text-gray-700 mt-2 text-sm">
-                    {blog.description.substring(0, 150)}...
+                    {blog.blogContent.substring(0, 150)}...
                   </p>
                 </div>
               </div>
@@ -85,10 +109,10 @@ export default function Blog() {
         <div className="bg-gray-50 p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-800">Popular Posts</h2>
           <ul className="mt-4 space-y-3">
-            {BlogsLeft.slice(0, 3).map((blog) => (
-              <li key={blog.id} className="border-b pb-2">
-                <button className="text-gray-700 font-medium hover:text-purple-800">{blog.title}</button>
-                <p className="text-sm text-gray-500">{blog.date}</p>
+            {blogs.slice(0, 3).map((blog) => (
+              <li key={blog.blogId} className="border-b pb-2">
+                <button className="text-gray-700 font-medium hover:text-purple-800">{blog.blogTitle}</button>
+                <p className="text-sm text-gray-500">{blog.blogContent.substring(0, 90)}....</p>
               </li>
             ))}
           </ul>

@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
+import { getAllBlogs } from "../../Utils/ApiFunctions";
+import LoadingSpinner from "../../components/Loading/loadingSpinner";
 
 const blogCards = [
   {
@@ -43,6 +45,27 @@ export default function BlogHeader() {
     const [index, setIndex] = useState(0);
     const nextSlide = () => setIndex((prev) => (prev + 1) % (blogCards.length - 2));
     const prevSlide = () => setIndex((prev) => (prev - 1 + blogCards.length - 2) % (blogCards.length - 2));
+    const [blogs, setBlogs] =  useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAllBlogs = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllBlogs();
+        if (data) {
+          setBlogs(data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllBlogs();
+  }, []);
+
+  if (loading) return <LoadingSpinner />;
   
     return (
       <div className="flex justify-between items-center w-full h-48 px-4">
@@ -57,11 +80,11 @@ export default function BlogHeader() {
   
         <div className="w-3/4 overflow-hidden">
         <div className="flex justify-between transition-transform ease-in-out duration-500" style={{ transform: `translateX(-${index * 100/3}%)` }}>
-          {blogCards.map((card) => (
-            <a key={card.id} className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2">
-              <img src={card.img} className="w-1/2 h-full object-cover" alt={card.title} />
+          {blogs.map((card) => (
+            <a key={card.blogId} className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2">
+              <img src={card.product.image} className="w-1/2 h-full object-cover" alt={card.blogTitle} />
               <div className="flex flex-col justify-center px-4 bg-gray-200 w-1/2">
-                <p className="text-lg font-semibold text-center">{card.title}</p>
+                <p className="text-lg font-semibold text-center">{card.blogTitle}</p>
               </div>
             </a>
           ))}

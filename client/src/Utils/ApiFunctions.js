@@ -257,6 +257,15 @@ async function deleteProduct(productId) {
 	}
 }
 
+async function getAllBlogs() {
+	try {
+		const response = await api.get("/blogs/getAllBlogs");
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error fetching all blogs: ${error.message}`);
+	}
+}
+
 
 // Update user profile
 async function updateUserProfile(userId, userData) {
@@ -470,6 +479,9 @@ export {
 	updateProduct,
 	updateProductActiveStatus,
 	deleteProduct,
+
+	// Blog exports
+	getAllBlogs,
 
 	//Transaction 
 	createTransaction,
