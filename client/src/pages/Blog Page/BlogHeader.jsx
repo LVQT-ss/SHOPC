@@ -80,11 +80,11 @@ export default function BlogHeader() {
   
         <div className="w-3/4 overflow-hidden">
         <div className="flex justify-between transition-transform ease-in-out duration-500" style={{ transform: `translateX(-${index * 100/3}%)` }}>
-          {blogs.slice(0, 6).map((card) => (
-            <a key={card.blogId} className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2">
-              <img src={card.product.image} className="w-1/2 h-full object-cover" alt={card.blogTitle} />
+          {blogCards.slice(0, 6).map((card) => (
+            <a key={card.id} className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2">
+              <img src={card.img} className="w-1/2 h-full object-cover" alt={card.title} />
               <div className="flex flex-col justify-center px-4 bg-gray-200 w-1/2">
-                <p className="text-md font-semibold text-center">{card.blogTitle}</p>
+                <p className="text-md font-semibold text-center">{card.title}</p>
               </div>
             </a>
           ))}

@@ -81,23 +81,23 @@ export default function Blog() {
             Latest Blog Posts
           </h2>
           <div className="space-y-6">
-            {blogs.map((blog) => (
+            {BlogsLeft.map((blog) => (
               <div
-                key={blog.blogId}
+                key={blog.id}
                 className="flex flex-col md:flex-row bg-gray-100 rounded-lg shadow-md overflow-hidden "
               >
                 <img
-                  src={blog.product.image}
-                  alt={blog.blogTitle}
+                  src={blog.img}
+                  alt={blog.title}
                   className="w-48 h-48 object-cover"
                 />
                 <div className="p-4 flex flex-col justify-between">
                   <button className="text-lg font-semibold hover:text-purple-800 text-left">
-                    {blog.blogTitle}
+                    {blog.title}
                   </button>
                   <p className="text-sm text-gray-600">{blog.date}</p>
                   <p className="text-gray-700 mt-2 text-sm">
-                    {blog.blogContent.substring(0, 150)}...
+                    {blog.description.substring(0, 150)}...
                   </p>
                 </div>
               </div>
@@ -109,10 +109,10 @@ export default function Blog() {
         <div className="bg-gray-50 p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-800">Popular Posts</h2>
           <ul className="mt-4 space-y-3">
-            {blogs.slice(0, 3).map((blog) => (
-              <li key={blog.blogId} className="border-b pb-2">
-                <button className="text-gray-700 font-medium hover:text-purple-800">{blog.blogTitle}</button>
-                <p className="text-sm text-gray-500">{blog.blogContent.substring(0, 90)}....</p>
+            {BlogsLeft.slice(0, 3).map((blog) => (
+              <li key={blog.id} className="border-b pb-2">
+                <button className="text-gray-700 font-medium hover:text-purple-800">{blog.title}</button>
+                <p className="text-sm text-gray-500">{blog.description.substring(0, 90)}....</p>
               </li>
             ))}
           </ul>
