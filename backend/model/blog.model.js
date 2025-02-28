@@ -29,6 +29,12 @@ const Blog = sequelize.define('Blog', {
         },
         onDelete: 'CASCADE',
     },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+    },
+    
 }, {
     tableName: 'blogs',
     timestamps: false,
