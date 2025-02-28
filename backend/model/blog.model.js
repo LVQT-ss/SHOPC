@@ -34,6 +34,7 @@ const Blog = sequelize.define('Blog', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
+    
 }, {
     tableName: 'blogs',
     timestamps: false,
