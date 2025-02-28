@@ -11,15 +11,15 @@ export default function Hero() {
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-2.svg"
+            src="https://phucanhcdn.com/media/news/8949_ctkm_phu_kien_laptop_thang9.jpg"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-3.svg"
+            src="https://tmdpc.vn/media/news/3009_Linhkin-min.jpg"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-4.svg"
+            src="https://bizweb.dktcdn.net/100/374/108/files/km30-4.jpg?v=1650727308189"
             alt="..."
           />
           <img
@@ -32,45 +32,45 @@ export default function Hero() {
       <div className="grid h-56 grid-cols-2 gap-4 sm:h-64 xl:h-80 2xl:h-96 mt-5 mb-10">
         <Carousel slideInterval={3000} indicators={false}>
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUuJYc0A2GI5yMuO4vbNkCwDKOKBNlHwqiqw&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-2.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvptg-dQd2pM8Xp-M1LYEohfEZbaCTgWyjuw&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-3.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOcb8Q6yY2hxyLBBTqhgxg8YBD-Sd_QuACBw&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-4.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSziCGeWIs_s4Xbk3lG6JAPrbgID1wQehMA6Q&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-5.svg"
+            src="https://genk.mediacdn.vn/zoom/600_315/139269124445442048/2023/10/11/avatar1697015204311-1697015205789978346881.jpg"
             alt="..."
           />
         </Carousel>
         <Carousel indicators={false}>
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-1.svg"
+            src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:90/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/linh-kien-may-tinh-1.jpg"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-2.svg"
+            src="https://bcavn.com/Image/Picture/New/linh-kien-may-tinh.png"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-3.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQh0g8QHmcsh9MF3wPofSqlV587KNFMDLiCaw&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-4.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQh0g8QHmcsh9MF3wPofSqlV587KNFMDLiCaw&s"
             alt="..."
           />
           <img
-            src="https://flowbite.com/docs/images/carousel/carousel-5.svg"
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQh0g8QHmcsh9MF3wPofSqlV587KNFMDLiCaw&s"
             alt="..."
           />
         </Carousel>
