@@ -266,6 +266,15 @@ async function getAllBlogs() {
 	}
 }
 
+async function getBlogById(blogId) {
+	try {
+		const response = await api.get(`/blogs/getBlogById/${blogId}`);
+		return response.data;
+	} catch (error) {
+		throw new Error(`Error fetching product: ${error.message}`);
+	}
+}
+
 
 // Update user profile
 async function updateUserProfile(userId, userData) {
@@ -482,6 +491,7 @@ export {
 
 	// Blog exports
 	getAllBlogs,
+	getBlogById,
 
 	//Transaction 
 	createTransaction,

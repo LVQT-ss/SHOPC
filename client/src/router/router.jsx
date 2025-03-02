@@ -17,8 +17,8 @@ import Checkout from "../pages/Checkout";
 import GetAllProducts from "../pages/GetAllproduct";
 import Test from "../pages/Test";
 import ProductDetail from "../pages/ProductDetail";
-
 import Blog from "../pages/Blog Page/Blog";
+import BlogDetail from "../pages/Blog Page/BlogDetail";
 
 const Layout = () => {
   return (
@@ -66,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: "blog",
         element: <Blog />,
+      },
+      {
+        path: "blog/:id",
+        element: <BlogDetail />,
       },
       {
         path: "dashboard",
