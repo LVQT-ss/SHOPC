@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { getAllBlogs } from "../../Utils/ApiFunctions";
 import LoadingSpinner from "../../components/Loading/loadingSpinner";
+import { Link } from "react-router-dom";
 
 const blogCards = [
   {
@@ -42,10 +43,14 @@ const blogCards = [
 ];
 
 export default function BlogHeader() {
-    const [index, setIndex] = useState(0);
-    const nextSlide = () => setIndex((prev) => (prev + 1) % (blogCards.length - 3));
-    const prevSlide = () => setIndex((prev) => (prev - 1 + blogCards.length - 3) % (blogCards.length - 3));
-    const [blogs, setBlogs] =  useState([]);
+  const [index, setIndex] = useState(0);
+  const nextSlide = () =>
+    setIndex((prev) => (prev + 1) % (blogCards.length - 3));
+  const prevSlide = () =>
+    setIndex(
+      (prev) => (prev - 1 + blogCards.length - 3) % (blogCards.length - 3)
+    );
+  const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,30 +71,54 @@ export default function BlogHeader() {
   }, []);
 
   if (loading) return <LoadingSpinner />;
-  
-    return (
-      <div className="flex justify-between items-center w-full h-48 px-4">
-        <div className="flex gap-2 w-auto h-12">
-          <button onClick={prevSlide} className="bg-indigo-500 text-white px-4 py-2 rounded-full flex items-center gap-2">
-            <ArrowLeft size={15} />
-          </button>
-          <button onClick={nextSlide} className="bg-indigo-500 text-white px-4 py-2 rounded-full flex items-center gap-2">
-            <ArrowRight size={15} />
-          </button>
-        </div>
-  
-        <div className="w-3/4 overflow-hidden">
-        <div className="flex justify-between transition-transform ease-in-out duration-500" style={{ transform: `translateX(-${index * 100/3}%)` }}>
-          {blogCards.slice(0, 6).map((card) => (
-            <a key={card.id} className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2">
-              <img src={card.img} className="w-1/2 h-full object-cover" alt={card.title} />
+
+  return (
+    <div className="flex justify-between items-center w-full h-48 px-4">
+      <div className="flex gap-2 w-auto h-12">
+        <button
+          onClick={prevSlide}
+          className="bg-indigo-500 text-white px-4 py-2 rounded-full flex items-center gap-2"
+        >
+          <ArrowLeft size={15} />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="bg-indigo-500 text-white px-4 py-2 rounded-full flex items-center gap-2"
+        >
+          <ArrowRight size={15} />
+        </button>
+      </div>
+
+      <div className="w-3/4 overflow-hidden">
+        <div
+          className="flex justify-between transition-transform ease-in-out duration-500"
+          style={{ transform: `translateX(-${(index * 100) / 3}%)` }}
+        >
+          {blogs.slice(0, 6).map((card) => (
+            <a
+              key={card.blogId}
+              className="flex flex-shrink-0 w-[calc(100%/3-1rem)] h-40 border rounded-lg overflow-hidden bg-gray-100 shadow-md mx-2"
+            >
+              <img
+                src={card.product.image}
+                className="w-1/2 h-full object-cover"
+                alt={card.blogTitle}
+              />
               <div className="flex flex-col justify-center px-4 bg-gray-200 w-1/2">
-                <p className="text-md font-semibold text-center">{card.title}</p>
+                <Link
+                  to={`/blog/${card.blogId}`}
+                  className="text-md font-semibold text-center hover:text-purple-800"
+                >
+                  {card.blogTitle}
+                </Link>
+                <p className="text-sm text-gray-600 text-center">
+                  {new Date(card.createdAt).toLocaleDateString()}
+                </p>
               </div>
             </a>
           ))}
         </div>
       </div>
     </div>
-    );
-  }
+  );
+}
