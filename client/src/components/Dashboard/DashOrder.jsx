@@ -208,7 +208,7 @@ const DashOrder = () => {
                     ))}
                   </Table.Cell>
                   <Table.Cell className="font-medium">
-                    ${parseFloat(order.orderTotal).toLocaleString()}
+                    {parseFloat(order.orderTotal).toLocaleString()} vnđ
                   </Table.Cell>
                   <Table.Cell>
                     {new Date(order.orderDate).toLocaleDateString()}

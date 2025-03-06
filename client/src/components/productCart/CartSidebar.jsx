@@ -12,6 +12,8 @@ import { createOrder } from "../../Utils/ApiFunctions";
 const CartSidebar = () => {
   const dispatch = useDispatch();
   const { items, isOpen } = useSelector((state) => state.cart);
+  const { currentUser } = useSelector((state) => state.user); // Getting user from Redux
+  const isAuthenticated = !!currentUser; // Derive authentication status from currentUser
   const sidebarRef = useRef(null);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,6 +26,19 @@ const CartSidebar = () => {
     guestPhoneNum: "",
     payment: "",
   });
+
+  // Initialize form with user data if logged in
+  useEffect(() => {
+    if (isAuthenticated && currentUser) {
+      setFormData({
+        guestName: currentUser.username || "",
+        guestEmail: currentUser.email || "",
+        guestAddress: currentUser.userAddress || "",
+        guestPhoneNum: currentUser.userPhoneNumber || "",
+        payment: "",
+      });
+    }
+  }, [isAuthenticated, currentUser]);
 
   const totalPrice = items.reduce(
     (sum, item) => sum + item.productPrice * item.quantity,
@@ -73,8 +88,15 @@ const CartSidebar = () => {
     setError("");
 
     try {
+      // Extract userId from currentUser based on the structure you showed
+      // Using the exact structure from your JSON example
+      const userId =
+        isAuthenticated && currentUser ? currentUser.user.userId : 1;
+
+      console.log("Creating order with userId:", userId); // Debug log
+
       const orderData = {
-        userId: 1, // Replace with actual user ID if available
+        userId: userId,
         guestName: formData.guestName,
         guestEmail: formData.guestEmail,
         guestAddress: formData.guestAddress,
@@ -89,7 +111,11 @@ const CartSidebar = () => {
         })),
       };
 
-      await createOrder(orderData);
+      console.log("Order data being sent:", JSON.stringify(orderData)); // Debug log
+
+      const response = await createOrder(orderData);
+      console.log("Order creation response:", response); // Debug log
+
       setSuccess(true);
       dispatch(clearCart());
 
@@ -99,6 +125,7 @@ const CartSidebar = () => {
         dispatch(toggleCart());
       }, 2000);
     } catch (err) {
+      console.error("Order creation failed:", err); // Debug log
       setError(err.message || "Failed to create order");
     } finally {
       setLoading(false);
@@ -124,6 +151,13 @@ const CartSidebar = () => {
               {error}
             </div>
           )}
+
+          {/* Show a message indicating if user is logged in or checking out as guest */}
+          <div className="p-2 bg-blue-50 text-blue-800 border border-blue-200 rounded text-sm">
+            {isAuthenticated && currentUser
+              ? `Ordering as ${currentUser.username}. Your order will be saved to your account (ID: ${currentUser.userId}).`
+              : "Checking out as guest. Please fill in your details below."}
+          </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">Full Name</label>
@@ -195,14 +229,13 @@ const CartSidebar = () => {
               className="w-full p-2 border rounded-md text-sm"
             >
               <option value="credit_card">Ngân hàng</option>
-
               <option value="cash">Tiền mặt</option>
             </select>
           </div>
 
           <div className="flex justify-between font-semibold mb-2">
             <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>{totalPrice.toFixed(2)} vnđ</span>
           </div>
 
           <div className="space-y-2">
@@ -236,7 +269,7 @@ const CartSidebar = () => {
       <>
         <div className="flex justify-between mb-4">
           <span className="font-semibold">Total:</span>
-          <span className="font-bold">${totalPrice.toFixed(2)}</span>
+          <span className="font-bold">{totalPrice.toFixed(2)} vnđ</span>
         </div>
         <div className="space-y-2">
           <button
@@ -293,7 +326,7 @@ const CartSidebar = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-sm">{item.productName}</h3>
                   <p className="text-green-600 font-semibold">
-                    ${(item.productPrice * item.quantity).toFixed(2)}
+                    {(item.productPrice * item.quantity).toFixed(2)} vnđ
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <button

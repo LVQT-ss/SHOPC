@@ -26,7 +26,7 @@ export default function PostCard({ product }) {
         <span className="italic text-sm">{product.productDescription}</span>
         <div className="flex justify-between items-center">
           <span className="font-bold text-green-600">
-            ${parseFloat(product.productPrice).toLocaleString()}
+            {parseFloat(product.productPrice).toLocaleString()} vnđ
           </span>
           <span
             className={`px-2 py-1 rounded text-xs ${
