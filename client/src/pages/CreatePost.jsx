@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, TextInput, Select, FileInput, Alert } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,70 +11,7 @@ import {
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { app } from "../firebase";
-import { createProduct } from "../Utils/ApiFunctions";
-
-const categories = [
-  {
-    categoryId: 1,
-    categoryName: "Combo Pc",
-    categoryType: "Combo Pc",
-  },
-  {
-    categoryId: 2,
-    categoryName: "Bo mạch chủ",
-    categoryType: "Linh kiện chính",
-  },
-  {
-    categoryId: 3,
-    categoryName: "Bộ vi xử lý",
-    categoryType: "Linh kiện chính",
-  },
-  {
-    categoryId: 4,
-    categoryName: "RAM",
-    categoryType: "Linh kiện chính",
-  },
-  {
-    categoryId: 5,
-    categoryName: "Ổ cứng HDD",
-    categoryType: "Lưu trữ",
-  },
-  {
-    categoryId: 6,
-    categoryName: "Ổ cứng SSD",
-    categoryType: "Lưu trữ",
-  },
-  {
-    categoryId: 7,
-    categoryName: "Card đồ họa",
-    categoryType: "Linh kiện chính",
-  },
-  {
-    categoryId: 8,
-    categoryName: "Nguồn điện PSU",
-    categoryType: "Linh kiện hỗ trợ",
-  },
-  {
-    categoryId: 10,
-    categoryName: "Ổ đĩa quang",
-    categoryType: "Phụ kiện",
-  },
-  {
-    categoryId: 11,
-    categoryName: "Card mạng",
-    categoryType: "Linh kiện kết nối",
-  },
-  {
-    categoryId: 12,
-    categoryName: "Vỏ máy tính",
-    categoryType: "Phụ kiện",
-  },
-  {
-    categoryId: 9,
-    categoryName: "CPU Fan",
-    categoryType: "Linh kiện hỗ trợ",
-  },
-];
+import { createProduct, getAllCategories } from "../Utils/ApiFunctions";
 
 const CreateProduct = () => {
   const [formData, setFormData] = useState({
@@ -82,16 +19,35 @@ const CreateProduct = () => {
     productName: "",
     productDescription: "",
     productPrice: "",
-    isActive: "",
+    isActive: "active", // Default value
     image: null,
   });
 
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [publishError, setPublishError] = useState(null);
 
   const navigate = useNavigate();
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getAllCategories();
+        setCategories(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Failed to load categories");
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleImageUpload = async () => {
     try {
@@ -140,7 +96,13 @@ const CreateProduct = () => {
     e.preventDefault();
 
     try {
-      await createProduct(formData);
+      // Convert categoryId to a number
+      const productData = {
+        ...formData,
+        categoryId: parseInt(formData.categoryId),
+      };
+
+      await createProduct(productData);
       toast.success("Product created successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -172,99 +134,111 @@ const CreateProduct = () => {
       <h1 className="text-center text-3xl my-7 font-semibold">
         Create a Product
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-4 sm:flex-row justify-between">
+
+      {loading ? (
+        <div className="text-center">Loading categories...</div>
+      ) : (
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-4 sm:flex-row justify-between">
+            <TextInput
+              type="text"
+              placeholder="Product Name"
+              required
+              id="productName"
+              className="flex-1"
+              onChange={handleInputChange}
+            />
+            <Select
+              id="categoryId"
+              onChange={handleInputChange}
+              value={formData.categoryId}
+              required
+            >
+              <option value="">Select a Category</option>
+              {categories.map((category) => (
+                <option key={category.categoryId} value={category.categoryId}>
+                  {category.categoryName} ({category.categoryType})
+                </option>
+              ))}
+            </Select>
+          </div>
+
           <TextInput
             type="text"
-            placeholder="Product Name"
+            placeholder="Product Description"
             required
-            id="productName"
-            className="flex-1"
+            id="productDescription"
             onChange={handleInputChange}
           />
-          <Select id="categoryId" onChange={handleInputChange} required>
-            <option value="">Select a Category</option>
-            {categories.map((category) => (
-              <option key={category.categoryId} value={category.categoryId}>
-                {category.categoryName} ({category.categoryType})
-              </option>
-            ))}
-          </Select>
-        </div>
 
-        <TextInput
-          type="text"
-          placeholder="Product Description"
-          required
-          id="productDescription"
-          onChange={handleInputChange}
-        />
-
-        <TextInput
-          type="number"
-          placeholder="Product Price"
-          required
-          id="productPrice"
-          step="0.01"
-          onChange={handleInputChange}
-        />
-
-        <Select
-          id="isActive"
-          onChange={handleInputChange}
-          value={formData.isActive}
-        >
-          <option value="active">Active</option>
-          <option value="inActive">Inactive</option>
-        </Select>
-
-        <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
-          <FileInput
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files[0])}
+          <TextInput
+            type="number"
+            placeholder="Product Price"
+            required
+            id="productPrice"
+            step="0.01"
+            onChange={handleInputChange}
           />
-          <Button
-            type="button"
-            gradientDuoTone="purpleToBlue"
-            size="sm"
-            outline
-            onClick={handleImageUpload}
-            disabled={imageUploadProgress}
+
+          <Select
+            id="isActive"
+            onChange={handleInputChange}
+            value={formData.isActive}
           >
-            {imageUploadProgress ? (
-              <div className="w-16 h-16">
-                <CircularProgressbar
-                  value={imageUploadProgress}
-                  text={`${imageUploadProgress || 0}%`}
-                />
-              </div>
-            ) : (
-              "Upload Image"
-            )}
+            <option value="active">Active</option>
+            <option value="inActive">Inactive</option>
+          </Select>
+
+          <div className="flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3">
+            <FileInput
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFile(e.target.files[0])}
+            />
+            <Button
+              type="button"
+              gradientDuoTone="purpleToBlue"
+              size="sm"
+              outline
+              onClick={handleImageUpload}
+              disabled={imageUploadProgress}
+            >
+              {imageUploadProgress ? (
+                <div className="w-16 h-16">
+                  <CircularProgressbar
+                    value={imageUploadProgress}
+                    text={`${imageUploadProgress || 0}%`}
+                  />
+                </div>
+              ) : (
+                "Upload Image"
+              )}
+            </Button>
+          </div>
+
+          {imageUploadError && (
+            <Alert color="failure">{imageUploadError}</Alert>
+          )}
+
+          {formData.image && (
+            <img
+              src={formData.image}
+              alt="Product"
+              className="w-full h-72 object-cover"
+            />
+          )}
+
+          <Button type="submit" gradientDuoTone="purpleToPink">
+            Create Product
           </Button>
-        </div>
 
-        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
-
-        {formData.image && (
-          <img
-            src={formData.image}
-            alt="Product"
-            className="w-full h-72 object-cover"
-          />
-        )}
-
-        <Button type="submit" gradientDuoTone="purpleToPink">
-          Create Product
-        </Button>
-
-        {publishError && (
-          <Alert className="mt-5" color="failure">
-            {publishError}
-          </Alert>
-        )}
-      </form>
+          {publishError && (
+            <Alert className="mt-5" color="failure">
+              {publishError}
+            </Alert>
+          )}
+        </form>
+      )}
     </div>
   );
 };
