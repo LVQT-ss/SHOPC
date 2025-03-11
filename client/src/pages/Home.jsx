@@ -4,6 +4,7 @@ import ProductCard from "../components/PostCard";
 import { Link } from "react-router-dom";
 import Hero from "../components/test/Hero/Hero";
 import { getAllProducts } from "../Utils/ApiFunctions";
+import CleaningServices from "../components/CleaningServices";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -56,9 +57,8 @@ const Home = () => {
         >
           Xem tất cả các cấu hình và linh kiện tại đây
         </Link>
+        <CleaningServices />
       </div>
-
-      <Hero />
 
       <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-semibold sm:border-b border-gray-500 p-3 mt-5">
@@ -101,6 +101,7 @@ const Home = () => {
       <div className="p-3 bg-amber-100 dark:bg-slate-700">
         <CallToAction />
       </div>
+      <Hero />
     </div>
   );
 };
