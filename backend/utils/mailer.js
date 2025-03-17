@@ -57,3 +57,26 @@ export const sendPasswordResetEmail = async (to, resetLink) => {
     return false;
   }
 };
+
+export const sendOrderSuccessBilling = async (to, resetLink) => {
+  try {
+    const info = await transporter.sendMail({
+      from: `"${mailConfig.FROM_NAME}" <${mailConfig.FROM_ADDRESS}>`,
+      to: to,
+      subject: "Password Reset Request",
+      text: `You requested to reset your password. Click the link to reset: ${resetLink}`,
+      html: `
+          <h1>Password Reset Request</h1>
+          <p>You requested to reset your password. Click the link below to reset your password:</p>
+          <a href="${resetLink}">${resetLink}</a>
+          <p>If you did not request this, please ignore this email.</p>
+        `,
+    });
+
+    console.log("Reset email sent: %s", info.messageId);
+    return true;
+  } catch (error) {
+    console.error("Error sending reset email: ", error);
+    return false;
+  }
+};

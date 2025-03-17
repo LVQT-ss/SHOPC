@@ -9,7 +9,7 @@ export const createOrder = async (req, res) => {
     const transaction = await sequelize.transaction();
 
     try {
-        const { userId, guestName, guestAddress, guestPhoneNum, guestEmail, payment, totalAmount, orderStatus, orderItems } = req.body;
+        const { userId, guestName, guestAddress, guestPhoneNum, guestEmail, payment, orderStatus, orderItems } = req.body;
 
         // Validate input
         if (!orderItems || !Array.isArray(orderItems) || orderItems.length === 0) {
@@ -18,7 +18,8 @@ export const createOrder = async (req, res) => {
             });
         }
 
-        // Validate products before creating order
+        // Validate products and calculate total
+        let calculatedTotal = 0;
         const validatedProducts = await Promise.all(orderItems.map(async (detail) => {
             const product = await Product.findOne({
                 where: {
@@ -36,10 +37,13 @@ export const createOrder = async (req, res) => {
                 throw new Error(`Product ${detail.productId} is not available`);
             }
 
-            // Validate quantity and price
+            // Validate quantity
             if (detail.quantity <= 0) {
                 throw new Error(`Invalid quantity for product ${detail.productId}`);
             }
+
+            // Add to calculated total
+            calculatedTotal += product.productPrice * detail.quantity;
 
             return {
                 ...detail,
@@ -50,13 +54,13 @@ export const createOrder = async (req, res) => {
         // Generate a more robust order number
         const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
 
-        // Create order with formatted date
+        // Create order with automatically calculated total
         const order = await Order.create({
             userId,
             guestName, guestAddress, guestPhoneNum, guestEmail, payment,
             orderNumber,
-            orderDate: Date.now(), // Hardcoded date as requested
-            orderTotal: totalAmount,
+            orderDate: Date.now(),
+            orderTotal: calculatedTotal, // Use the automatically calculated total
             orderStatus: orderStatus
         }, { transaction });
 
