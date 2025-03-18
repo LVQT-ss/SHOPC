@@ -1,8 +1,66 @@
 import express from 'express';
-import { createOrder, deleteOrder, getActiveOrders, getAllOrders, getLast7DaysSales, getOrderById, getOrdersByUser, getOrderStats, totalOrderToday, totalSaleToday, updateOrder }
+import {
+    // cassoWebhook, checkCassoPayment, 
+    createOrder, deleteOrder, getActiveOrders, getAllOrders, getLast7DaysSales, getLatestCassoTransaction,
+    getOrderById, getOrdersByUser, getOrderStats, totalOrderToday, totalSaleToday, updateOrder
+}
     from '../controllers/order.controller.js';
 
 const router = express.Router();
+
+
+/**
+ * @swagger
+ * /api/orders/test-casso-latest-transaction:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Get the latest transaction from Casso
+ *     description: Fetches the latest transaction from Casso for testing purposes. This endpoint is used to verify the integration with Casso and ensure that transactions are being retrieved correctly.
+ *     responses:
+ *       200:
+ *         description: Latest transaction retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Latest transaction retrieved successfully"
+ *                 transaction:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "12345"
+ *                     amount:
+ *                       type: number
+ *                       format: float
+ *                       example: 100.50
+ *                     description:
+ *                       type: string
+ *                       example: "Payment for order ORD-12345"
+ *                     date:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-10-05T12:34:56Z"
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching latest transaction from Casso"
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch transaction data from Casso"
+ */
+router.get('/test-casso-latest-transaction', getLatestCassoTransaction);
+
 
 /**
  * @swagger
@@ -387,9 +445,16 @@ router.put('/:orderId', updateOrder);
  */
 router.delete('/:orderId', deleteOrder);
 
+// // Route kiểm tra thanh toán Casso
+// router.get('/orders/:orderId/check-casso-payment', checkCassoPayment);
 
+// // Webhook Casso (không yêu cầu xác thực)
+// router.post('/casso-webhook', cassoWebhook);
 
+// router.get('/test-casso-connection', testCassoConnection);
 
+// router.get('/test-payment-verification/:orderId', testPaymentVerification);
 
+// router.post('/test-webhook', testCassoWebhook);
 
 export default router;

@@ -13,6 +13,7 @@ import orderRoutes from './routes/order.route.js'
 import loginHistoryRouter from './routes/loginHistory.route.js'
 import dotenv from 'dotenv';
 import setupAssociations from './model/associations.js';
+import { initCronJobs } from './utils/cronjobs.js';
 
 // Call this before starting your server
 setupAssociations();
@@ -29,10 +30,10 @@ app.use(cors());
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/categories', categoryRoutes); 
+app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/transactions', transactionRoutes);
-app.use('/api/blogs', blogRoutes); 
+app.use('/api/blogs', blogRoutes);
 app.use('/api/login-history', loginHistoryRouter);
 
 // Initialize and synchronize the database
@@ -51,3 +52,5 @@ process.on('SIGINT', () => {
     console.log('Closing PostgreSQL connection');
     process.exit();
 });
+// Khởi tạo cronjob
+initCronJobs();
