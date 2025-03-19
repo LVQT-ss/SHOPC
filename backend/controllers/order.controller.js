@@ -124,7 +124,8 @@ export const createOrder = async (req, res) => {
 
         // Start scanning for payment for this order
         startPaymentScanning(order.orderId, transactionNumber);
-
+        // Start automatic order status checking
+        checkLatestOrderStatusInternal(order.orderId);
         res.status(201).json({
             message: 'Order created successfully',
             order: {
@@ -185,19 +186,6 @@ export const getLatestCassoTransaction = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-// Function to start scanning for payment
 // Function to start scanning for payment
 const startPaymentScanning = async (orderId, transactionNumber) => {
     console.log(`Starting payment scanning for order ${orderId} with transaction ${transactionNumber}`);
@@ -440,6 +428,232 @@ export const checkOrderPayment = async (req, res) => {
     }
 };
 
+// Map để lưu trữ công việc quét đơn hàng
+const orderCheckingJobs = new Map();
+
+// Function để kiểm tra trạng thái order mới nhất
+export const checkLatestOrderStatus = async (req, res) => {
+    try {
+        // Tìm đơn hàng mới nhất
+        const latestOrder = await Order.findOne({
+            order: [['orderId', 'DESC']],
+            include: [{
+                model: Transaction,
+                as: 'transactionId'
+            }]
+        });
+
+        if (!latestOrder) {
+            return res.status(404).json({
+                message: 'Không tìm thấy đơn hàng nào'
+            });
+        }
+
+        const orderId = latestOrder.orderId;
+
+        // Nếu job đã tồn tại cho order này, hủy nó
+        if (orderCheckingJobs.has(orderId)) {
+            const job = orderCheckingJobs.get(orderId);
+            clearInterval(job.interval);
+            orderCheckingJobs.delete(orderId);
+        }
+
+        // Nếu order đã complete, trả về ngay
+        if (latestOrder.orderStatus === 'complete') {
+            return res.status(200).json({
+                message: 'Order đã complete',
+                orderId: orderId,
+                orderStatus: latestOrder.orderStatus
+            });
+        }
+
+        // Tạo job mới
+        const jobData = {
+            startTime: new Date(),
+            checkCount: 0,
+            interval: null
+        };
+
+        console.log(`Bắt đầu quét đơn hàng ${orderId}`);
+
+        // Tạo interval để quét mỗi 30 giây
+        jobData.interval = setInterval(async () => {
+            try {
+                jobData.checkCount++;
+                console.log(`Đang quét đơn hàng ${orderId} (lần ${jobData.checkCount})...`);
+
+                // Kiểm tra trạng thái order
+                const order = await Order.findOne({
+                    where: { orderId },
+                    include: [{
+                        model: Transaction,
+                        as: 'transactionId'
+                    }]
+                });
+
+                if (!order) {
+                    console.log(`Không tìm thấy đơn hàng ${orderId}`);
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                    return;
+                }
+
+                // Nếu đã complete, dừng quét
+                if (order.orderStatus === 'complete') {
+                    console.log(`Đơn hàng ${orderId} đã complete`);
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                    return;
+                }
+
+                // Nếu đã quét 20 lần (10 phút) mà vẫn active
+                if (jobData.checkCount >= 20 && order.orderStatus === 'active') {
+                    console.log(`Đơn hàng ${orderId} đã quét 10 phút mà vẫn active, cập nhật thành inactive`);
+
+                    await Order.update(
+                        { orderStatus: 'inactive' },
+                        { where: { orderId } }
+                    );
+
+                    // Cập nhật trạng thái transaction nếu cần
+                    if (order.transaction && order.transactionId.status === 'pending') {
+                        await Transaction.update(
+                            { status: 'cancelled' },
+                            { where: { orderId } }
+                        );
+                    }
+
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                }
+            } catch (error) {
+                console.error(`Lỗi khi quét đơn hàng ${orderId}:`, error);
+            }
+        }, 30000); // 30 giây
+
+        // Lưu job vào Map
+        orderCheckingJobs.set(orderId, jobData);
+
+        return res.status(200).json({
+            message: 'Đã bắt đầu kiểm tra trạng thái đơn hàng mới nhất',
+            orderId: orderId,
+            orderStatus: latestOrder.orderStatus
+        });
+
+    } catch (error) {
+        console.error('Lỗi khi bắt đầu kiểm tra đơn hàng:', error);
+        res.status(500).json({
+            message: 'Lỗi khi bắt đầu kiểm tra đơn hàng',
+            error: error.message
+        });
+    }
+};
+
+// Dừng tất cả các job đang chạy
+export const stopAllOrderChecking = (req, res) => {
+    try {
+        let stoppedCount = 0;
+
+        for (const [orderId, job] of orderCheckingJobs.entries()) {
+            clearInterval(job.interval);
+            orderCheckingJobs.delete(orderId);
+            stoppedCount++;
+        }
+
+        return res.status(200).json({
+            message: `Đã dừng ${stoppedCount} công việc kiểm tra đơn hàng`,
+            stoppedCount
+        });
+    } catch (error) {
+        console.error('Lỗi khi dừng kiểm tra đơn hàng:', error);
+        res.status(500).json({
+            message: 'Lỗi khi dừng kiểm tra đơn hàng',
+            error: error.message
+        });
+    }
+};
+
+// Tạo phiên bản nội bộ của hàm checkLatestOrderStatus
+const checkLatestOrderStatusInternal = async (orderId) => {
+    try {
+        console.log(`Bắt đầu tự động kiểm tra trạng thái đơn hàng ${orderId}`);
+
+        // Nếu job đã tồn tại cho order này, hủy nó
+        if (orderCheckingJobs.has(orderId)) {
+            const job = orderCheckingJobs.get(orderId);
+            clearInterval(job.interval);
+            orderCheckingJobs.delete(orderId);
+        }
+
+        // Tạo job mới
+        const jobData = {
+            startTime: new Date(),
+            checkCount: 0,
+            interval: null
+        };
+
+        // Tạo interval để quét mỗi 30 giây
+        jobData.interval = setInterval(async () => {
+            try {
+                jobData.checkCount++;
+                console.log(`Đang quét đơn hàng ${orderId} (lần ${jobData.checkCount})...`);
+
+                // Kiểm tra trạng thái order
+                const order = await Order.findOne({
+                    where: { orderId },
+                    include: [{
+                        model: Transaction,
+                        as: 'transactionId'
+                    }]
+                });
+
+                if (!order) {
+                    console.log(`Không tìm thấy đơn hàng ${orderId}`);
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                    return;
+                }
+
+                // Nếu đã complete, dừng quét
+                if (order.orderStatus === 'complete') {
+                    console.log(`Đơn hàng ${orderId} đã complete`);
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                    return;
+                }
+
+                // Nếu đã quét 20 lần (10 phút) mà vẫn active
+                if (jobData.checkCount >= 20 && order.orderStatus === 'active') {
+                    console.log(`Đơn hàng ${orderId} đã quét 10 phút mà vẫn active, cập nhật thành inactive`);
+
+                    await Order.update(
+                        { orderStatus: 'inactive' },
+                        { where: { orderId } }
+                    );
+
+                    // Cập nhật trạng thái transaction nếu cần
+                    if (order.transaction && order.transactionId.status === 'pending') {
+                        await Transaction.update(
+                            { status: 'cancelled' },
+                            { where: { orderId } }
+                        );
+                    }
+
+                    clearInterval(jobData.interval);
+                    orderCheckingJobs.delete(orderId);
+                }
+            } catch (error) {
+                console.error(`Lỗi khi quét đơn hàng ${orderId}:`, error);
+            }
+        }, 30000); // 30 giây
+
+        // Lưu job vào Map
+        orderCheckingJobs.set(orderId, jobData);
+
+    } catch (error) {
+        console.error('Lỗi khi bắt đầu kiểm tra đơn hàng:', error);
+    }
+};
 
 export const getAllOrders = async (req, res) => {
     try {

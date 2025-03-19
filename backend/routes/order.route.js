@@ -1,8 +1,9 @@
 import express from 'express';
 import {
+    checkLatestOrderStatus,
     // cassoWebhook, checkCassoPayment, 
     createOrder, deleteOrder, getActiveOrders, getAllOrders, getLast7DaysSales, getLatestCassoTransaction,
-    getOrderById, getOrdersByUser, getOrderStats, totalOrderToday, totalSaleToday, updateOrder
+    getOrderById, getOrdersByUser, getOrderStats, stopAllOrderChecking, totalOrderToday, totalSaleToday, updateOrder
 }
     from '../controllers/order.controller.js';
 
@@ -456,5 +457,39 @@ router.delete('/:orderId', deleteOrder);
 // router.get('/test-payment-verification/:orderId', testPaymentVerification);
 
 // router.post('/test-webhook', testCassoWebhook);
+
+/**
+ * @swagger
+ * /api/orders/check-latest:
+ *   post:
+ *     tags:
+ *       - Orders
+ *     summary: Start checking status of the latest order
+ *     description: Starts a job that checks the latest order's status every 30 seconds for up to 10 minutes
+ *     responses:
+ *       200:
+ *         description: Started checking order status successfully
+ *       404:
+ *         description: No orders found
+ *       500:
+ *         description: Server error
+ */
+router.post('/check-latest', checkLatestOrderStatus);
+
+/**
+ * @swagger
+ * /api/orders/stop-checking:
+ *   post:
+ *     tags:
+ *       - Orders
+ *     summary: Stop all order checking jobs
+ *     description: Stops all running order status checking jobs
+ *     responses:
+ *       200:
+ *         description: Stopped all checking jobs successfully
+ *       500:
+ *         description: Server error
+ */
+router.post('/stop-checking', stopAllOrderChecking);
 
 export default router;
