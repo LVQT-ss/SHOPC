@@ -153,10 +153,9 @@ export const createOrder = async (req, res) => {
 // Modified getLatestCassoTransaction function to handle the 2 most recent transactions
 export const getLatestCassoTransaction = async (req, res) => {
     try {
-        console.log("Fetching the latest transaction from Casso...");
-
-        // Lấy 5 giao dịch gần nhất
-        const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=10&sort=asc";
+        console.log("Fetching latest transaction from Casso...");
+        // Sắp xếp theo thời gian gần nhất (sort=des) và kích thước trang là 1 để lấy giao dịch mới nhất
+        const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=1&sort=DESC";
         const apiKey = process.env.CASSO_API_KEY;
 
         const response = await axios.get(cassoApiUrl, {
@@ -166,30 +165,21 @@ export const getLatestCassoTransaction = async (req, res) => {
         console.log("Casso API Response:", response.data);
 
         if (!response.data || response.data.error !== 0) {
-            console.error("Failed to fetch transactions from Casso");
-            return res.status(500).json({ message: "Failed to fetch transactions from Casso" });
+            console.error("Failed to fetch transaction data from Casso");
+            return res.status(500).json({ message: "Failed to fetch transaction data from Casso" });
         }
 
-        const records = response.data.data.records;
-        if (records.length === 0) {
-            return res.status(404).json({ message: "No transactions found" });
-        }
-
-        // Tìm giao dịch có id lớn nhất (mới nhất)
-        const latestTransaction = records.reduce((latest, current) => {
-            return current.id > latest.id ? current : latest;
-        });
-
-        console.log("Latest Transaction (highest ID):", latestTransaction);
+        const latestTransaction = response.data.data.records[0];
+        console.log("Latest Transaction:", latestTransaction);
 
         res.status(200).json({
             message: "Latest transaction retrieved successfully",
             transaction: latestTransaction
         });
     } catch (error) {
-        console.error("Error fetching the latest transaction from Casso:", error);
+        console.error("Error fetching latest transaction from Casso:", error);
         res.status(500).json({
-            message: "Error fetching the latest transaction from Casso",
+            message: "Error fetching latest transaction from Casso",
             error: error.message
         });
     }
@@ -233,7 +223,7 @@ const startPaymentScanning = async (orderId, transactionNumber) => {
             console.log(`Scan #${scanCount} for order ${orderId}`);
 
             // Get the latest transaction from Casso
-            const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=20&sort=asc";
+            const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=5&sort=DESC";
             const apiKey = process.env.CASSO_API_KEY;
 
             const response = await axios.get(cassoApiUrl, {
@@ -386,7 +376,7 @@ export const checkOrderPayment = async (req, res) => {
         console.log(`Clean transaction number to search for: ${cleanTransactionNumber}`);
 
         // Get the latest transaction from Casso
-        const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=20&sort=asc";
+        const cassoApiUrl = "https://oauth.casso.vn/v2/transactions?pageSize=5&sort=DESC";
         const apiKey = process.env.CASSO_API_KEY;
 
         const response = await axios.get(cassoApiUrl, {
