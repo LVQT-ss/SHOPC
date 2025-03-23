@@ -717,6 +717,46 @@ export const getOrdersByUser = async (req, res) => {
     }
 };
 
+export const getOrdersByUserID = async (req, res) => {
+    try {
+        // Check if user ID exists in the request
+        const userId = req.params.userId || req.query.userId || (req.user ? req.user.userId : null);
+
+        if (!userId) {
+            return res.status(400).json({
+                message: 'User ID is required'
+            });
+        }
+
+        const orders = await Order.findAll({
+            where: { userId },
+            include: [
+                {
+                    model: OrderDetails,
+                    as: 'orderDetails',
+                    include: [
+                        {
+                            model: Product,
+                            as: 'product'
+                        }
+                    ]
+                }
+            ],
+            order: [['orderDate', 'DESC']]
+        });
+
+        res.status(200).json({
+            message: 'Orders retrieved successfully',
+            orders
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching user orders',
+            error: error.message
+        });
+    }
+};
+
 export const getActiveOrders = async (req, res) => {
     try {
         // Enhanced authorization check

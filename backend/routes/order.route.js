@@ -3,7 +3,7 @@ import {
     checkLatestOrderStatus,
     // cassoWebhook, checkCassoPayment, 
     createOrder, deleteOrder, getActiveOrders, getAllOrders, getLast7DaysSales, getLatestCassoTransaction,
-    getOrderById, getOrdersByUser, getOrderStats, stopAllOrderChecking, totalOrderToday, totalSaleToday, updateOrder
+    getOrderById, getOrdersByUser, getOrdersByUserID, getOrderStats, stopAllOrderChecking, totalOrderToday, totalSaleToday, updateOrder
 }
     from '../controllers/order.controller.js';
 
@@ -186,6 +186,30 @@ router.get('/active', getActiveOrders);
  *         description: Server error
  */
 router.get('/user', getOrdersByUser);
+
+/**
+ * @swagger
+ * /api/orders/user/{userId}:
+ *   get:
+ *     tags:
+ *     - Orders
+ *     summary: Get orders for a specific user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: List of user's orders retrieved successfully
+ *       400:
+ *         description: User ID is required
+ *       500:
+ *         description: Server error
+ */
+router.get('/user/:userId', getOrdersByUserID);
 
 
 /**
