@@ -384,8 +384,8 @@ const CartSidebar = () => {
               className="w-full p-2 border rounded-md text-sm"
             >
               <option value="">Select Payment Method</option>
-              <option value="credit_card">Bank Transfer</option>
-              <option value="cash">Cash</option>
+              <option value="credit_card">Cash</option>
+              <option value="cash">Bank Transfer</option>
             </select>
           </div>
 
