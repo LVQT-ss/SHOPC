@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { X, Plus, Minus, ShoppingCart, Loader2 } from "lucide-react";
+import { X, Plus, Minus, ShoppingCart, Loader2, Clock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   toggleCart,
@@ -7,18 +7,30 @@ import {
   updateQuantity,
   clearCart,
 } from "../../redux/cart/cartSlice";
-import { createOrder } from "../../Utils/ApiFunctions";
+import {
+  createOrder,
+  startCheckingLatestOrder,
+  stopCheckingOrders,
+} from "../../Utils/ApiFunctions";
 
 const CartSidebar = () => {
   const dispatch = useDispatch();
   const { items, isOpen } = useSelector((state) => state.cart);
-  const { currentUser } = useSelector((state) => state.user); // Getting user from Redux
-  const isAuthenticated = !!currentUser; // Derive authentication status from currentUser
+  const { currentUser } = useSelector((state) => state.user);
+  const isAuthenticated = !!currentUser;
   const sidebarRef = useRef(null);
+
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [paymentStep, setPaymentStep] = useState(null);
+  const [countdown, setCountdown] = useState(600); // 10 minutes = 600 seconds
+  const [orderResponse, setOrderResponse] = useState(null);
+  const [orderStatusChecking, setOrderStatusChecking] = useState(false);
+  const countdownIntervalRef = useRef(null);
+  const orderStatusCheckIntervalRef = useRef(null);
+
   const [formData, setFormData] = useState({
     guestName: "",
     guestEmail: "",
@@ -26,6 +38,38 @@ const CartSidebar = () => {
     guestPhoneNum: "",
     payment: "",
   });
+
+  // Reset checkout state when closing checkout
+  const resetCheckoutState = () => {
+    setIsCheckingOut(false);
+    setPaymentStep(null);
+    setOrderResponse(null);
+    setOrderStatusChecking(false);
+    setError("");
+    setSuccess(false);
+
+    // Clear all intervals
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    if (orderStatusCheckIntervalRef.current) {
+      clearInterval(orderStatusCheckIntervalRef.current);
+      orderStatusCheckIntervalRef.current = null;
+    }
+
+    // Reset form data
+    setFormData({
+      guestName:
+        isAuthenticated && currentUser ? currentUser.username || "" : "",
+      guestEmail: isAuthenticated && currentUser ? currentUser.email || "" : "",
+      guestAddress:
+        isAuthenticated && currentUser ? currentUser.userAddress || "" : "",
+      guestPhoneNum:
+        isAuthenticated && currentUser ? currentUser.userPhoneNumber || "" : "",
+      payment: "",
+    });
+  };
 
   // Initialize form with user data if logged in
   useEffect(() => {
@@ -45,6 +89,7 @@ const CartSidebar = () => {
     0
   );
 
+  // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -60,6 +105,69 @@ const CartSidebar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, dispatch]);
+
+  // Countdown timer logic
+  useEffect(() => {
+    if (paymentStep === "qr" && countdown > 0) {
+      countdownIntervalRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownIntervalRef.current);
+            // Cancel order or reset payment
+            setPaymentStep(null);
+            setOrderResponse(null);
+            return 600;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    };
+  }, [paymentStep, countdown]);
+
+  // Order status checking logic
+  const startOrderStatusChecking = async () => {
+    try {
+      // Stop any existing checking
+      await stopCheckingOrders();
+
+      // Start new order status checking
+      const response = await startCheckingLatestOrder();
+
+      // Set up interval to periodically check
+      orderStatusCheckIntervalRef.current = setInterval(async () => {
+        try {
+          const statusResponse = await startCheckingLatestOrder();
+
+          if (statusResponse.orderStatus === "complete") {
+            // Payment successful
+            clearInterval(orderStatusCheckIntervalRef.current);
+            handlePaymentComplete();
+          }
+        } catch (error) {
+          console.error("Error checking order status:", error);
+          // Stop checking if there's an error
+          clearInterval(orderStatusCheckIntervalRef.current);
+        }
+      }, 10000); // Check every 10 seconds
+
+      setOrderStatusChecking(true);
+    } catch (error) {
+      console.error("Error starting order status checking:", error);
+      setError(error.message);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
 
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -88,12 +196,8 @@ const CartSidebar = () => {
     setError("");
 
     try {
-      // Extract userId from currentUser based on the structure you showed
-      // Using the exact structure from your JSON example
       const userId =
         isAuthenticated && currentUser ? currentUser.user.userId : 1;
-
-      console.log("Creating order with userId:", userId); // Debug log
 
       const orderData = {
         userId: userId,
@@ -111,28 +215,75 @@ const CartSidebar = () => {
         })),
       };
 
-      console.log("Order data being sent:", JSON.stringify(orderData)); // Debug log
-
       const response = await createOrder(orderData);
-      console.log("Order creation response:", response); // Debug log
 
-      setSuccess(true);
-      dispatch(clearCart());
-
-      setTimeout(() => {
-        setSuccess(false);
-        setIsCheckingOut(false);
-        dispatch(toggleCart());
-      }, 2000);
+      // Set the full order response for QR payment
+      setOrderResponse(response);
+      // Move to QR payment step
+      setPaymentStep("qr");
+      // Start order status checking
+      await startOrderStatusChecking();
+      // Reset countdown
+      setCountdown(600);
     } catch (err) {
-      console.error("Order creation failed:", err); // Debug log
+      console.error("Order creation failed:", err);
       setError(err.message || "Failed to create order");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  const handlePaymentComplete = () => {
+    // Handle successful payment
+    setSuccess(true);
+    dispatch(clearCart());
+
+    // Clear intervals
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+    }
+    if (orderStatusCheckIntervalRef.current) {
+      clearInterval(orderStatusCheckIntervalRef.current);
+    }
+
+    setTimeout(() => {
+      resetCheckoutState();
+      dispatch(toggleCart());
+    }, 2000);
+  };
+
+  const renderQRPayment = () => {
+    if (!orderResponse) return null;
+
+    return (
+      <div className="text-center space-y-4">
+        <div className="flex justify-center mb-4">
+          <img
+            src={orderResponse.payment.vietQRUrl}
+            alt="VietQR Payment"
+            className="w-64 h-64 object-contain"
+          />
+        </div>
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="w-5 h-5 text-red-500" />
+            <span className="font-semibold text-red-500">
+              Time Remaining: {formatTime(countdown)}
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 mb-4">
+            Please scan the QR code to complete your payment within the time
+            limit.
+          </p>
+          <div className="text-center text-sm text-gray-500 mb-4">
+            {orderStatusChecking
+              ? "Checking payment status..."
+              : "Payment verification in progress"}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const renderFooter = () => {
     if (success) {
@@ -141,6 +292,10 @@ const CartSidebar = () => {
           Order placed successfully! Thank you for your purchase.
         </div>
       );
+    }
+
+    if (paymentStep === "qr") {
+      return renderQRPayment();
     }
 
     if (isCheckingOut) {
@@ -219,7 +374,7 @@ const CartSidebar = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">
-              Thanh toán bằng :
+              Payment Method
             </label>
             <select
               name="payment"
@@ -228,8 +383,9 @@ const CartSidebar = () => {
               required
               className="w-full p-2 border rounded-md text-sm"
             >
-              <option value="credit_card">Ngân hàng</option>
-              <option value="cash">Tiền mặt</option>
+              <option value="">Select Payment Method</option>
+              <option value="credit_card">Bank Transfer</option>
+              <option value="cash">Cash</option>
             </select>
           </div>
 
@@ -241,7 +397,7 @@ const CartSidebar = () => {
           <div className="space-y-2">
             <button
               type="button"
-              onClick={() => setIsCheckingOut(false)}
+              onClick={resetCheckoutState}
               className="w-full py-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
             >
               Back to Cart
@@ -290,6 +446,8 @@ const CartSidebar = () => {
     );
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
       <div
@@ -302,7 +460,10 @@ const CartSidebar = () => {
             {isCheckingOut ? "Checkout" : "Shopping Cart"}
           </h2>
           <button
-            onClick={() => dispatch(toggleCart())}
+            onClick={() => {
+              resetCheckoutState();
+              dispatch(toggleCart());
+            }}
             className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
           >
             <X className="w-5 h-5" />

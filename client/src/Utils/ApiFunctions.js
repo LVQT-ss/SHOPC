@@ -448,6 +448,29 @@ async function generateVietQR(orderId, paymentMethod) {
 	}
 }
 
+async function startCheckingLatestOrder() {
+	try {
+		const response = await api.post("/orders/check-latest", {}, {
+			headers: getHeader(),
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error starting order status check");
+	}
+}
+
+async function stopCheckingOrders() {
+	try {
+		const response = await api.post("/orders/stop-checking", {}, {
+			headers: getHeader(),
+		});
+		return response.data;
+	} catch (error) {
+		throw new Error(error.response?.data || "Error stopping order status check");
+	}
+}
+
+
 
 export {
 	// Auth exports
@@ -501,6 +524,8 @@ export {
 	getTransactionsByDateRange,
 
 	// QR By check 
-	generateVietQR
-
+	generateVietQR,
+	//Check PAYMENT 
+	startCheckingLatestOrder,
+	stopCheckingOrders,
 };
